@@ -57,6 +57,35 @@ public class YamlConfigFileTest {
   }
 
   @Test
+  public void testWhenHasContentWithOrder() throws Exception {
+    LinkedHashMap someProperties = new LinkedHashMap();
+    String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
+    String someContent = "someKey: 'someValue'\n someKey2: 'someValue2'";
+    someProperties.put(key, someContent);
+    someSourceType = ConfigSourceType.LOCAL;
+
+    LinkedHashMap yamlProperties = new LinkedHashMap();
+    yamlProperties.put("someKey", "someValue");
+    yamlProperties.put("someKey2", "someValue2");
+
+    when(configRepository.getConfig()).thenReturn(someProperties);
+    when(configRepository.getSourceType()).thenReturn(someSourceType);
+    when(yamlParser.yamlToProperties(someContent)).thenReturn(yamlProperties);
+
+    YamlConfigFile configFile = new YamlConfigFile(someNamespace, configRepository);
+
+    assertSame(someContent, configFile.getContent());
+    assertSame(yamlProperties, configFile.asProperties());
+
+    LinkedHashMap parseResult=configFile.asProperties();
+
+    String[] keys =(String[]) parseResult.keySet().toArray(new String[]{});
+    assertEquals("someKey",keys[0]);
+    assertEquals("someKey2",keys[1]);
+  }
+
+
+  @Test
   public void testWhenHasNoContent() throws Exception {
     when(configRepository.getConfig()).thenReturn(null);
 
