@@ -74,9 +74,14 @@ public class PropertySourcesProcessor implements BeanFactoryPostProcessor, Envir
     while (iterator.hasNext()) {
       int order = iterator.next();
       for (String namespace : NAMESPACE_NAMES.get(order)) {
-        Config config = ConfigService.getConfig(namespace);
+        if(namespace.endsWith(".yml")){
 
-        composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource(namespace, config));
+        }
+        else {
+          Config config = ConfigService.getConfig(namespace);
+
+          composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource(namespace, config));
+        }
       }
     }
 

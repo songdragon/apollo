@@ -28,9 +28,9 @@ public class YamlParser {
   /**
    * Transform yaml content to properties
    */
-  public Properties yamlToProperties(String yamlContent) {
+  public LinkedHashMap yamlToProperties(String yamlContent) {
     Yaml yaml = createYaml();
-    final Properties result = new Properties();
+    final LinkedHashMap result = new LinkedHashMap();
     process(new MatchCallback() {
       @Override
       public void process(Properties properties, Map<String, Object> map) {

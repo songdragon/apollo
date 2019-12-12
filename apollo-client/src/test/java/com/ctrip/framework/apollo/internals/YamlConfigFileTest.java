@@ -8,6 +8,8 @@ import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
 import com.ctrip.framework.apollo.util.yaml.YamlParser;
+
+import java.util.LinkedHashMap;
 import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,14 +37,14 @@ public class YamlConfigFileTest {
 
   @Test
   public void testWhenHasContent() throws Exception {
-    Properties someProperties = new Properties();
+    LinkedHashMap someProperties = new LinkedHashMap();
     String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
     String someContent = "someKey: 'someValue'";
-    someProperties.setProperty(key, someContent);
+    someProperties.put(key, someContent);
     someSourceType = ConfigSourceType.LOCAL;
 
-    Properties yamlProperties = new Properties();
-    yamlProperties.setProperty("someKey", "someValue");
+    LinkedHashMap yamlProperties = new LinkedHashMap();
+    yamlProperties.put("someKey", "someValue");
 
     when(configRepository.getConfig()).thenReturn(someProperties);
     when(configRepository.getSourceType()).thenReturn(someSourceType);
@@ -63,17 +65,17 @@ public class YamlConfigFileTest {
     assertFalse(configFile.hasContent());
     assertNull(configFile.getContent());
 
-    Properties properties = configFile.asProperties();
+    LinkedHashMap properties = configFile.asProperties();
 
     assertTrue(properties.isEmpty());
   }
 
   @Test
   public void testWhenInvalidYamlContent() throws Exception {
-    Properties someProperties = new Properties();
+    LinkedHashMap someProperties = new LinkedHashMap();
     String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
     String someInvalidContent = ",";
-    someProperties.setProperty(key, someInvalidContent);
+    someProperties.put(key, someInvalidContent);
     someSourceType = ConfigSourceType.LOCAL;
 
     when(configRepository.getConfig()).thenReturn(someProperties);
@@ -105,26 +107,26 @@ public class YamlConfigFileTest {
     assertNull(configFile.getContent());
     assertEquals(ConfigSourceType.NONE, configFile.getSourceType());
 
-    Properties properties = configFile.asProperties();
+    LinkedHashMap properties = configFile.asProperties();
 
     assertTrue(properties.isEmpty());
   }
 
   @Test
   public void testOnRepositoryChange() throws Exception {
-    Properties someProperties = new Properties();
+    LinkedHashMap someProperties = new LinkedHashMap();
     String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
     String someValue = "someKey: 'someValue'";
     String anotherValue = "anotherKey: 'anotherValue'";
-    someProperties.setProperty(key, someValue);
+    someProperties.put(key, someValue);
 
     someSourceType = ConfigSourceType.LOCAL;
 
-    Properties someYamlProperties = new Properties();
-    someYamlProperties.setProperty("someKey", "someValue");
+    LinkedHashMap someYamlProperties = new LinkedHashMap();
+    someYamlProperties.put("someKey", "someValue");
 
-    Properties anotherYamlProperties = new Properties();
-    anotherYamlProperties.setProperty("anotherKey", "anotherValue");
+    LinkedHashMap anotherYamlProperties = new LinkedHashMap();
+    anotherYamlProperties.put("anotherKey", "anotherValue");
 
     when(configRepository.getConfig()).thenReturn(someProperties);
     when(configRepository.getSourceType()).thenReturn(someSourceType);
@@ -137,8 +139,8 @@ public class YamlConfigFileTest {
     assertEquals(someSourceType, configFile.getSourceType());
     assertSame(someYamlProperties, configFile.asProperties());
 
-    Properties anotherProperties = new Properties();
-    anotherProperties.setProperty(key, anotherValue);
+    LinkedHashMap anotherProperties = new LinkedHashMap();
+    anotherProperties.put(key, anotherValue);
 
     ConfigSourceType anotherSourceType = ConfigSourceType.REMOTE;
     when(configRepository.getSourceType()).thenReturn(anotherSourceType);
@@ -152,15 +154,15 @@ public class YamlConfigFileTest {
 
   @Test
   public void testWhenConfigRepositoryHasErrorAndThenRecovered() throws Exception {
-    Properties someProperties = new Properties();
+    LinkedHashMap someProperties = new LinkedHashMap();
     String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
     String someValue = "someKey: 'someValue'";
-    someProperties.setProperty(key, someValue);
+    someProperties.put(key, someValue);
 
     someSourceType = ConfigSourceType.LOCAL;
 
-    Properties someYamlProperties = new Properties();
-    someYamlProperties.setProperty("someKey", "someValue");
+    LinkedHashMap someYamlProperties = new LinkedHashMap();
+    someYamlProperties.put("someKey", "someValue");
 
     when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
     when(configRepository.getSourceType()).thenReturn(someSourceType);

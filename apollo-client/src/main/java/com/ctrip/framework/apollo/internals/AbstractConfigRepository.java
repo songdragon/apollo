@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -44,7 +45,7 @@ public abstract class AbstractConfigRepository implements ConfigRepository {
     m_listeners.remove(listener);
   }
 
-  protected void fireRepositoryChange(String namespace, Properties newProperties) {
+  protected void fireRepositoryChange(String namespace, LinkedHashMap newProperties) {
     for (RepositoryChangeListener listener : m_listeners) {
       try {
         listener.onRepositoryChange(namespace, newProperties);

@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 /**
@@ -11,5 +12,5 @@ public interface RepositoryChangeListener {
    * @param namespace the namespace of this repository change
    * @param newProperties the properties after change
    */
-  public void onRepositoryChange(String namespace, Properties newProperties);
+  public void onRepositoryChange(String namespace, LinkedHashMap newProperties);
 }
