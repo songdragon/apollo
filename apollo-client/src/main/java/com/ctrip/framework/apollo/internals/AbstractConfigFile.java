@@ -4,7 +4,6 @@ import com.ctrip.framework.apollo.enums.ConfigSourceType;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -74,7 +73,7 @@ public abstract class AbstractConfigFile implements ConfigFile, RepositoryChange
     if (newProperties.equals(m_configProperties.get())) {
       return;
     }
-    Properties newConfigProperties = new Properties();
+    LinkedHashMap newConfigProperties = new LinkedHashMap();
     newConfigProperties.putAll(newProperties);
 
     String oldValue = getContent();

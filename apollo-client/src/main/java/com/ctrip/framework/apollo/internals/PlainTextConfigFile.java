@@ -3,7 +3,6 @@ package com.ctrip.framework.apollo.internals;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 
 import java.util.LinkedHashMap;
-import java.util.Properties;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

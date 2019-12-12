@@ -1,7 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
 import java.util.LinkedHashMap;
-import java.util.Properties;
 
 /**
  * @author Jason Song(song_s@ctrip.com)

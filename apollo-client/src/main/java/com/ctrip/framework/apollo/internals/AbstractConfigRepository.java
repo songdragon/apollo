@@ -2,7 +2,6 @@ package com.ctrip.framework.apollo.internals;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -109,7 +109,7 @@ public class DefaultConfig extends AbstractConfig implements RepositoryChangeLis
 
   private Set<String> stringPropertyNames(LinkedHashMap properties) {
     //jdk9以下版本Properties#enumerateStringProperties方法存在性能问题，keys() + get(k) 重复迭代, jdk9之后改为entrySet遍历.
-    Map<String, String> h = new HashMap<>();
+    Map<String, String> h = new LinkedHashMap<>();
     Set<Map.Entry> entrySet = properties.entrySet();
     for (Map.Entry e : entrySet) {
       Object k = e.getKey();

@@ -103,9 +103,6 @@ public class ApolloApplicationContextInitializer implements
       Config config = ConfigService.getConfig(namespace);
 
       composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource(namespace, config));
-      if(namespace.endsWith(".yml")){
-
-      }
 
     }
 

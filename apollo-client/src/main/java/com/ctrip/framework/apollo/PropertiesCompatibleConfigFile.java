@@ -1,7 +1,6 @@
 package com.ctrip.framework.apollo;
 
 import java.util.LinkedHashMap;
-import java.util.Properties;
 
 /**
  * Config files that are properties compatible, e.g. yaml
