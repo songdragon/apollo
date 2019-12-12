@@ -1,129 +1,132 @@
 package com.ctrip.framework.apollo.internals;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+import java.util.LinkedHashMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.LinkedHashMap;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
-
 /**
  * @author Jason Song(song_s@ctrip.com)
  */
 @RunWith(MockitoJUnitRunner.class)
 public class JsonConfigFileTest {
-    private String someNamespace;
-    @Mock
-    private ConfigRepository configRepository;
 
-    private ConfigSourceType someSourceType;
+  private String someNamespace;
+  @Mock
+  private ConfigRepository configRepository;
 
-    @Before
-    public void setUp() throws Exception {
-        someNamespace = "someName";
-    }
+  private ConfigSourceType someSourceType;
 
-    @Test
-    public void testWhenHasContent() throws Exception {
-        LinkedHashMap someProperties = new LinkedHashMap();
-        String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
-        String someValue = "someValue";
-        someProperties.put(key, someValue);
+  @Before
+  public void setUp() throws Exception {
+    someNamespace = "someName";
+  }
 
-        someSourceType = ConfigSourceType.LOCAL;
+  @Test
+  public void testWhenHasContent() throws Exception {
+    LinkedHashMap someProperties = new LinkedHashMap();
+    String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
+    String someValue = "someValue";
+    someProperties.put(key, someValue);
 
-        when(configRepository.getConfig()).thenReturn(someProperties);
-        when(configRepository.getSourceType()).thenReturn(someSourceType);
+    someSourceType = ConfigSourceType.LOCAL;
 
-        JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
+    when(configRepository.getConfig()).thenReturn(someProperties);
+    when(configRepository.getSourceType()).thenReturn(someSourceType);
 
-        assertEquals(ConfigFileFormat.JSON, configFile.getConfigFileFormat());
-        assertEquals(someNamespace, configFile.getNamespace());
-        assertTrue(configFile.hasContent());
-        assertEquals(someValue, configFile.getContent());
-        assertEquals(someSourceType, configFile.getSourceType());
-    }
+    JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
 
-    @Test
-    public void testWhenHasNoContent() throws Exception {
-        when(configRepository.getConfig()).thenReturn(null);
+    assertEquals(ConfigFileFormat.JSON, configFile.getConfigFileFormat());
+    assertEquals(someNamespace, configFile.getNamespace());
+    assertTrue(configFile.hasContent());
+    assertEquals(someValue, configFile.getContent());
+    assertEquals(someSourceType, configFile.getSourceType());
+  }
 
-        JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
+  @Test
+  public void testWhenHasNoContent() throws Exception {
+    when(configRepository.getConfig()).thenReturn(null);
 
-        assertFalse(configFile.hasContent());
-        assertNull(configFile.getContent());
-    }
+    JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
 
-    @Test
-    public void testWhenConfigRepositoryHasError() throws Exception {
-        when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
+    assertFalse(configFile.hasContent());
+    assertNull(configFile.getContent());
+  }
 
-        JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
+  @Test
+  public void testWhenConfigRepositoryHasError() throws Exception {
+    when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
 
-        assertFalse(configFile.hasContent());
-        assertNull(configFile.getContent());
-        assertEquals(ConfigSourceType.NONE, configFile.getSourceType());
-    }
+    JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
 
-    @Test
-    public void testOnRepositoryChange() throws Exception {
-        LinkedHashMap someProperties = new LinkedHashMap();
-        String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
-        String someValue = "someValue";
-        String anotherValue = "anotherValue";
-        someProperties.put(key, someValue);
+    assertFalse(configFile.hasContent());
+    assertNull(configFile.getContent());
+    assertEquals(ConfigSourceType.NONE, configFile.getSourceType());
+  }
 
-        someSourceType = ConfigSourceType.LOCAL;
+  @Test
+  public void testOnRepositoryChange() throws Exception {
+    LinkedHashMap someProperties = new LinkedHashMap();
+    String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
+    String someValue = "someValue";
+    String anotherValue = "anotherValue";
+    someProperties.put(key, someValue);
 
-        when(configRepository.getConfig()).thenReturn(someProperties);
-        when(configRepository.getSourceType()).thenReturn(someSourceType);
+    someSourceType = ConfigSourceType.LOCAL;
 
-        JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
+    when(configRepository.getConfig()).thenReturn(someProperties);
+    when(configRepository.getSourceType()).thenReturn(someSourceType);
 
-        assertEquals(someValue, configFile.getContent());
-        assertEquals(someSourceType, configFile.getSourceType());
+    JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
 
-        LinkedHashMap anotherProperties = new LinkedHashMap();
-        anotherProperties.put(key, anotherValue);
+    assertEquals(someValue, configFile.getContent());
+    assertEquals(someSourceType, configFile.getSourceType());
 
-        ConfigSourceType anotherSourceType = ConfigSourceType.REMOTE;
-        when(configRepository.getSourceType()).thenReturn(anotherSourceType);
+    LinkedHashMap anotherProperties = new LinkedHashMap();
+    anotherProperties.put(key, anotherValue);
 
-        configFile.onRepositoryChange(someNamespace, anotherProperties);
+    ConfigSourceType anotherSourceType = ConfigSourceType.REMOTE;
+    when(configRepository.getSourceType()).thenReturn(anotherSourceType);
 
-        assertEquals(anotherValue, configFile.getContent());
-        assertEquals(anotherSourceType, configFile.getSourceType());
-    }
+    configFile.onRepositoryChange(someNamespace, anotherProperties);
 
-    @Test
-    public void testWhenConfigRepositoryHasErrorAndThenRecovered() throws Exception {
-        LinkedHashMap someProperties = new LinkedHashMap();
-        String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
-        String someValue = "someValue";
-        someProperties.put(key, someValue);
+    assertEquals(anotherValue, configFile.getContent());
+    assertEquals(anotherSourceType, configFile.getSourceType());
+  }
 
-        someSourceType = ConfigSourceType.LOCAL;
+  @Test
+  public void testWhenConfigRepositoryHasErrorAndThenRecovered() throws Exception {
+    LinkedHashMap someProperties = new LinkedHashMap();
+    String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
+    String someValue = "someValue";
+    someProperties.put(key, someValue);
 
-        when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
-        when(configRepository.getSourceType()).thenReturn(someSourceType);
+    someSourceType = ConfigSourceType.LOCAL;
 
-        JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
+    when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
+    when(configRepository.getSourceType()).thenReturn(someSourceType);
 
-        assertFalse(configFile.hasContent());
-        assertNull(configFile.getContent());
-        assertEquals(ConfigSourceType.NONE, configFile.getSourceType());
+    JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
 
-        configFile.onRepositoryChange(someNamespace, someProperties);
+    assertFalse(configFile.hasContent());
+    assertNull(configFile.getContent());
+    assertEquals(ConfigSourceType.NONE, configFile.getSourceType());
 
-        assertTrue(configFile.hasContent());
-        assertEquals(someValue, configFile.getContent());
-        assertEquals(someSourceType, configFile.getSourceType());
-    }
+    configFile.onRepositoryChange(someNamespace, someProperties);
+
+    assertTrue(configFile.hasContent());
+    assertEquals(someValue, configFile.getContent());
+    assertEquals(someSourceType, configFile.getSourceType());
+  }
 }
