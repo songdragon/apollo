@@ -15,11 +15,8 @@ import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
-import java.util.Properties;
 import org.junit.After;
 import org.junit.Before;
 import org.springframework.util.ReflectionUtils;
@@ -89,6 +86,12 @@ public abstract class AbstractSpringIntegrationTest {
     ConfigRepository configRepository = mock(ConfigRepository.class);
 
     when(configRepository.getConfig()).thenReturn(properties);
+
+    //TODO: add new mock test
+    LinkedHashMap linkedHashMap=new LinkedHashMap();
+    linkedHashMap.putAll(properties);
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
+
 
     YamlConfigFile configFile = new YamlConfigFile(namespaceNameWithFormat, configRepository);
 

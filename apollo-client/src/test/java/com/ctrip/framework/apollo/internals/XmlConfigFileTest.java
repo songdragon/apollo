@@ -10,6 +10,8 @@ import com.ctrip.framework.apollo.ConfigFileChangeListener;
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigFileChangeEvent;
 import com.google.common.util.concurrent.SettableFuture;
+
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import java.util.concurrent.TimeUnit;
@@ -44,6 +46,9 @@ public class XmlConfigFileTest {
     someProperties.setProperty(key, someValue);
 
     when(configRepository.getConfig()).thenReturn(someProperties);
+    LinkedHashMap linkedHashMap=new LinkedHashMap();
+    linkedHashMap.putAll(someProperties);
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
 
     XmlConfigFile configFile = new XmlConfigFile(someNamespace, configRepository);
 
@@ -82,6 +87,9 @@ public class XmlConfigFileTest {
     someProperties.setProperty(key, someValue);
 
     when(configRepository.getConfig()).thenReturn(someProperties);
+    LinkedHashMap linkedHashMap=new LinkedHashMap();
+    linkedHashMap.putAll(someProperties);
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
 
     XmlConfigFile configFile = new XmlConfigFile(someNamespace, configRepository);
 
@@ -155,6 +163,9 @@ public class XmlConfigFileTest {
     someProperties.setProperty(key, someValue);
 
     when(configRepository.getConfig()).thenReturn(someProperties);
+    LinkedHashMap linkedHashMap=new LinkedHashMap();
+    linkedHashMap.putAll(someProperties);
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
 
     XmlConfigFile configFile = new XmlConfigFile(someNamespace, configRepository);
 

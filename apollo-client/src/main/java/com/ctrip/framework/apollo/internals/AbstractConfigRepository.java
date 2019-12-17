@@ -1,6 +1,7 @@
 package com.ctrip.framework.apollo.internals;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -44,7 +45,12 @@ public abstract class AbstractConfigRepository implements ConfigRepository {
     m_listeners.remove(listener);
   }
 
+  @Deprecated
   protected void fireRepositoryChange(String namespace, Properties newProperties) {
+    fireRepositoryChange(namespace,(Map)newProperties);
+  }
+
+  protected void fireRepositoryChange(String namespace, Map newProperties) {
     for (RepositoryChangeListener listener : m_listeners) {
       try {
         listener.onRepositoryChange(namespace, newProperties);

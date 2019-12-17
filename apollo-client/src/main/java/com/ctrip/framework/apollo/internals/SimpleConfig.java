@@ -77,7 +77,19 @@ public class SimpleConfig extends AbstractConfig implements RepositoryChangeList
   }
 
   @Override
+  @Deprecated
   public synchronized void onRepositoryChange(String namespace, Properties newProperties) {
+    onRepositoryChange(namespace,(Map)newProperties);
+  }
+
+  /**
+   * Invoked when config repository changes.
+   * TODO： Add synchronized before remove deprated APIs
+   * @param namespace     the namespace of this repository change
+   * @param newProperties the properties after change
+   */
+  @Override
+  public void onRepositoryChange(String namespace, Map newProperties) {
     if (newProperties.equals(m_configProperties)) {
       return;
     }
@@ -86,12 +98,12 @@ public class SimpleConfig extends AbstractConfig implements RepositoryChangeList
 
     List<ConfigChange> changes = calcPropertyChanges(namespace, m_configProperties, newConfigProperties);
     Map<String, ConfigChange> changeMap = Maps.uniqueIndex(changes,
-        new Function<ConfigChange, String>() {
-          @Override
-          public String apply(ConfigChange input) {
-            return input.getPropertyName();
-          }
-        });
+            new Function<ConfigChange, String>() {
+              @Override
+              public String apply(ConfigChange input) {
+                return input.getPropertyName();
+              }
+            });
 
     updateConfig(newConfigProperties, m_configRepository.getSourceType());
     clearConfigCache();

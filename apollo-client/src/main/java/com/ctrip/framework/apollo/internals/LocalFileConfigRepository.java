@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -36,7 +38,7 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
   private final String m_namespace;
   private File m_baseDir;
   private final ConfigUtil m_configUtil;
-  private volatile Properties m_fileProperties;
+  private volatile Map m_fileProperties;
   private volatile ConfigRepository m_upstream;
 
   private volatile ConfigSourceType m_sourceType = ConfigSourceType.LOCAL;
@@ -84,11 +86,24 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
   }
 
   @Override
+  @Deprecated
   public Properties getConfig() {
+    Properties properties=new Properties();
+    properties.putAll(getSequenceConfig());
+    return properties;
+  }
+
+  /**
+   * Get the config from this repository with config origin order.
+   *
+   * @return config
+   */
+  @Override
+  public LinkedHashMap getSequenceConfig() {
     if (m_fileProperties == null) {
       sync();
     }
-    Properties result = new Properties();
+    LinkedHashMap result = new LinkedHashMap();
     result.putAll(m_fileProperties);
     return result;
   }
@@ -114,6 +129,17 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
 
   @Override
   public void onRepositoryChange(String namespace, Properties newProperties) {
+    this.onRepositoryChange(namespace,(Map)newProperties);
+  }
+
+  /**
+   * Invoked when config repository changes.
+   *
+   * @param namespace     the namespace of this repository change
+   * @param newProperties the properties after change
+   */
+  @Override
+  public void onRepositoryChange(String namespace, Map newProperties) {
     if (newProperties.equals(m_fileProperties)) {
       return;
     }
@@ -160,7 +186,7 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
       return false;
     }
     try {
-      updateFileProperties(m_upstream.getConfig(), m_upstream.getSourceType());
+      updateFileProperties(m_upstream.getSequenceConfig(), m_upstream.getSourceType());
       return true;
     } catch (Throwable ex) {
       Tracer.logError(ex);
@@ -171,7 +197,7 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
     return false;
   }
 
-  private synchronized void updateFileProperties(Properties newProperties, ConfigSourceType sourceType) {
+  private synchronized void updateFileProperties(Map newProperties, ConfigSourceType sourceType) {
     this.m_sourceType = sourceType;
     if (newProperties.equals(m_fileProperties)) {
       return;
@@ -228,7 +254,10 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
     transaction.addData("LocalConfigFile", file.getAbsolutePath());
     try {
       out = new FileOutputStream(file);
-      m_fileProperties.store(out, "Persisted by DefaultConfig");
+
+      Properties toStore=new Properties();
+      toStore.putAll(m_fileProperties);
+      toStore.store(out, "Persisted by DefaultConfig");
       transaction.setStatus(Transaction.SUCCESS);
     } catch (IOException ex) {
       ApolloConfigException exception =

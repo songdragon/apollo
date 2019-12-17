@@ -1,6 +1,9 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.util.ExceptionUtil;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -18,7 +21,7 @@ import com.ctrip.framework.apollo.util.yaml.YamlParser;
  */
 public class YamlConfigFile extends PlainTextConfigFile implements PropertiesCompatibleConfigFile {
   private static final Logger logger = LoggerFactory.getLogger(YamlConfigFile.class);
-  private volatile Properties cachedProperties;
+  private volatile LinkedHashMap cachedProperties;
 
   public YamlConfigFile(String namespace, ConfigRepository configRepository) {
     super(namespace, configRepository);
@@ -31,13 +34,32 @@ public class YamlConfigFile extends PlainTextConfigFile implements PropertiesCom
   }
 
   @Override
+  @Deprecated
   protected void update(Properties newProperties) {
+    update((Map)newProperties);
+  }
+
+  @Override
+  protected void update(Map newProperties) {
     super.update(newProperties);
     tryTransformToProperties();
   }
 
   @Override
+  @Deprecated
   public Properties asProperties() {
+    LinkedHashMap properties = asSequenceProperties();
+    Properties decorated=new Properties();
+    decorated.putAll(properties);
+    return decorated;
+  }
+
+  /**
+   * @return the properties form of the config file with original order in the file
+   * @throws RuntimeException if the content could not be transformed to @{link java.util.LinkedHashMap}
+   */
+  @Override
+  public LinkedHashMap asSequenceProperties() {
     if (cachedProperties == null) {
       transformToProperties();
     }
@@ -59,13 +81,13 @@ public class YamlConfigFile extends PlainTextConfigFile implements PropertiesCom
     cachedProperties = toProperties();
   }
 
-  private Properties toProperties() {
+  private LinkedHashMap toProperties() {
     if (!this.hasContent()) {
-      return new Properties();
+      return new LinkedHashMap();
     }
 
     try {
-      return ApolloInjector.getInstance(YamlParser.class).yamlToProperties(getContent());
+      return ApolloInjector.getInstance(YamlParser.class).yamlToSequenceProperties(getContent());
     } catch (Throwable ex) {
       ApolloConfigException exception = new ApolloConfigException(
           "Parse yaml file content failed for namespace: " + m_namespace, ex);

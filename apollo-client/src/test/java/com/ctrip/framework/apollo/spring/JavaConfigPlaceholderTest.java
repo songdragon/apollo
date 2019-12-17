@@ -11,6 +11,8 @@ import com.ctrip.framework.apollo.PropertiesCompatibleConfigFile;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.spring.annotation.ApolloJsonValue;
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 import org.junit.Test;
@@ -81,7 +83,13 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
     when(properties.getProperty(TIMEOUT_PROPERTY)).thenReturn(String.valueOf(someTimeout));
     when(properties.getProperty(BATCH_PROPERTY)).thenReturn(String.valueOf(someBatch));
     PropertiesCompatibleConfigFile configFile = mock(PropertiesCompatibleConfigFile.class);
-    when(configFile.asProperties()).thenReturn(properties);
+//    when(configFile.asProperties()).thenReturn(properties);
+
+    LinkedHashMap linkedHashMap = mock(LinkedHashMap.class);
+    when(linkedHashMap.get(TIMEOUT_PROPERTY)).thenReturn(String.valueOf(someTimeout));
+    when(linkedHashMap.get(BATCH_PROPERTY)).thenReturn(String.valueOf(someBatch));
+
+    when(configFile.asSequenceProperties()).thenReturn(linkedHashMap);
 
     mockConfigFile("application.yaml", configFile);
 
@@ -96,8 +104,14 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
 
     when(properties.getProperty(TIMEOUT_PROPERTY)).thenReturn(String.valueOf(someTimeout));
     when(properties.getProperty(BATCH_PROPERTY)).thenReturn(String.valueOf(someBatch));
+
+    LinkedHashMap linkedHashMap=mock(LinkedHashMap.class);
+    when(linkedHashMap.get(TIMEOUT_PROPERTY)).thenReturn(String.valueOf(someTimeout));
+    when(linkedHashMap.get(BATCH_PROPERTY)).thenReturn(String.valueOf(someBatch));
+
     PropertiesCompatibleConfigFile configFile = mock(PropertiesCompatibleConfigFile.class);
     when(configFile.asProperties()).thenReturn(properties);
+    when(configFile.asSequenceProperties()).thenReturn(linkedHashMap);
 
     mockConfigFile("application.yaml", configFile);
 
@@ -130,8 +144,15 @@ public class JavaConfigPlaceholderTest extends AbstractSpringIntegrationTest {
 
     when(properties.getProperty(TIMEOUT_PROPERTY)).thenReturn(String.valueOf(someTimeout));
     when(properties.getProperty(BATCH_PROPERTY)).thenReturn(String.valueOf(someBatch));
+
+    LinkedHashMap linkedHashMap = mock(LinkedHashMap.class);
+    when(linkedHashMap.get(TIMEOUT_PROPERTY)).thenReturn(String.valueOf(someTimeout));
+    when(linkedHashMap.get(BATCH_PROPERTY)).thenReturn(String.valueOf(someBatch));
+
     PropertiesCompatibleConfigFile configFile = mock(PropertiesCompatibleConfigFile.class);
     when(configFile.asProperties()).thenReturn(properties);
+
+    when(configFile.asSequenceProperties()).thenReturn(linkedHashMap);
 
     mockConfigFile("application.yml", configFile);
 

@@ -11,6 +11,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import com.ctrip.framework.apollo.internals.PropertiesCompatibleFileConfigRepository;
+
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -58,6 +60,7 @@ public class DefaultConfigFactoryTest {
 
     LocalFileConfigRepository someLocalConfigRepo = mock(LocalFileConfigRepository.class);
     when(someLocalConfigRepo.getConfig()).thenReturn(someProperties);
+    when(someLocalConfigRepo.getSequenceConfig()).thenReturn(new LinkedHashMap(someProperties));
 
     doReturn(someLocalConfigRepo).when(defaultConfigFactory).createLocalConfigRepository(someNamespace);
 
@@ -90,6 +93,7 @@ public class DefaultConfigFactoryTest {
 
     PropertiesCompatibleFileConfigRepository someRepository = mock(PropertiesCompatibleFileConfigRepository.class);
     when(someRepository.getConfig()).thenReturn(someProperties);
+    when(someRepository.getSequenceConfig()).thenReturn(new LinkedHashMap(someProperties));
 
     doReturn(someRepository).when(defaultConfigFactory)
         .createPropertiesCompatibleFileConfigRepository(someNamespace, somePropertiesCompatibleFormat);

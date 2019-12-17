@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -25,7 +26,13 @@ public class PropertiesConfigFile extends AbstractConfigFile {
   }
 
   @Override
+  @Deprecated
   protected void update(Properties newProperties) {
+    update((Map)newProperties);
+  }
+
+  @Override
+  protected void update(Map newProperties) {
     m_configProperties.set(newProperties);
     m_contentCache.set(null);
   }
@@ -44,7 +51,7 @@ public class PropertiesConfigFile extends AbstractConfigFile {
     }
 
     try {
-      return PropertiesUtil.toString(m_configProperties.get());
+      return PropertiesUtil.toString((Map)m_configProperties.get());
     } catch (Throwable ex) {
       ApolloConfigException exception =
           new ApolloConfigException(String

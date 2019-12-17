@@ -13,13 +13,7 @@ import com.ctrip.framework.apollo.enums.ConfigSourceType;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.io.File;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Function;
@@ -82,6 +76,24 @@ public class DefaultConfigTest {
     file.delete();
   }
 
+  private void mockConfigRepository() {
+    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockGetSequenceConfig();
+  }
+
+
+  private void mockGetSequenceConfig() {
+    LinkedHashMap sequenceProperties=new LinkedHashMap();
+    if(someProperties!=null) {
+      sequenceProperties.putAll(someProperties);
+      when(configRepository.getSequenceConfig()).thenReturn(sequenceProperties);
+    }
+    else{
+      when(configRepository.getSequenceConfig()).thenReturn(null);
+
+    }
+  }
+
   @Test
   public void testGetPropertyWithAllPropertyHierarchy() throws Exception {
     String someKey = "someKey";
@@ -100,7 +112,8 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty(someKey, someLocalFileValue);
     someProperties.setProperty(anotherKey, someLocalFileValue);
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
+
     someSourceType = ConfigSourceType.LOCAL;
     when(configRepository.getSourceType()).thenReturn(someSourceType);
 
@@ -143,7 +156,8 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty(someStringKey, someStringValue);
     someProperties.setProperty(someKey, String.valueOf(someValue));
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
+
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -164,6 +178,11 @@ public class DefaultConfigTest {
     when(someProperties.getProperty(someKey)).thenReturn(String.valueOf(someValue));
     when(configRepository.getConfig()).thenReturn(someProperties);
 
+    LinkedHashMap linkedHashMap=mock(LinkedHashMap.class);
+    when(linkedHashMap.get(someKey)).thenReturn(String.valueOf(someValue));
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
+
+
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
 
@@ -171,7 +190,8 @@ public class DefaultConfigTest {
     assertEquals(someValue, defaultConfig.getIntProperty(someKey, someDefaultValue));
     assertEquals(someValue, defaultConfig.getIntProperty(someKey, someDefaultValue));
 
-    verify(someProperties, times(1)).getProperty(someKey);
+    verify(someProperties, times(0)).getProperty(someKey);
+    verify(linkedHashMap, times(1)).get(someKey);
   }
 
   @Test
@@ -185,7 +205,8 @@ public class DefaultConfigTest {
     //set up config repo
     someProperties = new Properties();
     someProperties.setProperty(someKey, String.valueOf(someValue));
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
+
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -218,22 +239,33 @@ public class DefaultConfigTest {
     when(someProperties.getProperty(anotherKey)).thenReturn(String.valueOf(anotherValue));
     when(configRepository.getConfig()).thenReturn(someProperties);
 
+
+    LinkedHashMap linkedHashMap=mock(LinkedHashMap.class);
+    when(linkedHashMap.get(someKey)).thenReturn(String.valueOf(someValue));
+    when(linkedHashMap.get(anotherKey)).thenReturn(String.valueOf(anotherValue));
+
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
+
+
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
 
     assertEquals(someValue, defaultConfig.getIntProperty(someKey, someDefaultValue));
     assertEquals(someValue, defaultConfig.getIntProperty(someKey, someDefaultValue));
 
-    verify(someProperties, times(1)).getProperty(someKey);
+    verify(someProperties, times(0)).getProperty(someKey);
+    verify(linkedHashMap, times(1)).get(someKey);
 
     assertEquals(anotherValue, defaultConfig.getIntProperty(anotherKey, someDefaultValue));
     assertEquals(anotherValue, defaultConfig.getIntProperty(anotherKey, someDefaultValue));
 
-    verify(someProperties, times(1)).getProperty(anotherKey);
+    verify(someProperties, times(0)).getProperty(anotherKey);
+    verify(linkedHashMap, times(1)).get(anotherKey);
 
     assertEquals(someValue, defaultConfig.getIntProperty(someKey, someDefaultValue));
 
-    verify(someProperties, times(2)).getProperty(someKey);
+    verify(someProperties, times(0)).getProperty(someKey);
+    verify(linkedHashMap, times(2)).get(someKey);
   }
 
   @Test
@@ -250,20 +282,27 @@ public class DefaultConfigTest {
     when(someProperties.getProperty(someKey)).thenReturn(String.valueOf(someValue));
     when(configRepository.getConfig()).thenReturn(someProperties);
 
+    LinkedHashMap linkedHashMap=mock(LinkedHashMap.class);
+    when(linkedHashMap.get(someKey)).thenReturn(String.valueOf(someValue));
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
+
+
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
 
     assertEquals(someValue, defaultConfig.getIntProperty(someKey, someDefaultValue));
     assertEquals(someValue, defaultConfig.getIntProperty(someKey, someDefaultValue));
 
-    verify(someProperties, times(1)).getProperty(someKey);
+    verify(someProperties, times(0)).getProperty(someKey);
+    verify(linkedHashMap, times(1)).get(someKey);
 
     TimeUnit.MILLISECONDS.sleep(50);
 
     assertEquals(someValue, defaultConfig.getIntProperty(someKey, someDefaultValue));
     assertEquals(someValue, defaultConfig.getIntProperty(someKey, someDefaultValue));
 
-    verify(someProperties, times(2)).getProperty(someKey);
+    verify(someProperties, times(0)).getProperty(someKey);
+    verify(linkedHashMap, times(2)).get(someKey);
   }
 
   @Test
@@ -280,7 +319,10 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty(someStringKey, someStringValue);
     someProperties.setProperty(someKey, String.valueOf(someValue));
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
+
+    mockGetSequenceConfig();
+
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -288,6 +330,8 @@ public class DefaultConfigTest {
     assertEquals(someValue, defaultConfig.getLongProperty(someKey, someDefaultValue));
     assertEquals(someDefaultValue, defaultConfig.getLongProperty(someStringKey, someDefaultValue));
   }
+
+
 
   @Test
   public void testGetShortProperty() throws Exception {
@@ -303,7 +347,7 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty(someStringKey, someStringValue);
     someProperties.setProperty(someKey, String.valueOf(someValue));
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -326,7 +370,7 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty(someStringKey, someStringValue);
     someProperties.setProperty(someKey, String.valueOf(someValue));
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -334,6 +378,7 @@ public class DefaultConfigTest {
     assertEquals(someValue, defaultConfig.getFloatProperty(someKey, someDefaultValue), 0.001);
     assertEquals(someDefaultValue, defaultConfig.getFloatProperty(someStringKey, someDefaultValue), 0.001);
   }
+
 
   @Test
   public void testGetDoubleProperty() throws Exception {
@@ -349,7 +394,7 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty(someStringKey, someStringValue);
     someProperties.setProperty(someKey, String.valueOf(someValue));
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -372,7 +417,7 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty(someStringKey, someStringValue);
     someProperties.setProperty(someKey, String.valueOf(someValue));
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -395,7 +440,7 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty(someStringKey, someStringValue);
     someProperties.setProperty(someKey, String.valueOf(someValue));
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -418,7 +463,7 @@ public class DefaultConfigTest {
     //set up config repo
     someProperties = new Properties();
     someProperties.setProperty(someKey, someValue);
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -444,20 +489,27 @@ public class DefaultConfigTest {
     when(someProperties.getProperty(someKey)).thenReturn(someValue);
     when(configRepository.getConfig()).thenReturn(someProperties);
 
+
+    LinkedHashMap linkedHashMap=mock(LinkedHashMap.class);
+    when(linkedHashMap.get(someKey)).thenReturn(String.valueOf(someValue));
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
+
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
 
     assertArrayEquals(values, defaultConfig.getArrayProperty(someKey, someDelimiter, someDefaultValue));
     assertArrayEquals(values, defaultConfig.getArrayProperty(someKey, someDelimiter, someDefaultValue));
 
-    verify(someProperties, times(1)).getProperty(someKey);
+    verify(someProperties, times(0)).getProperty(someKey);
+    verify(linkedHashMap, times(1)).get(someKey);
 
     assertArrayEquals(someDefaultValue, defaultConfig.getArrayProperty(someKey, someInvalidDelimiter,
         someDefaultValue));
     assertArrayEquals(someDefaultValue, defaultConfig.getArrayProperty(someKey, someInvalidDelimiter,
         someDefaultValue));
 
-    verify(someProperties, times(3)).getProperty(someKey);
+    verify(someProperties, times(0)).getProperty(someKey);
+    verify(linkedHashMap, times(3)).get(someKey);
   }
 
   @Test
@@ -475,7 +527,7 @@ public class DefaultConfigTest {
     //set up config repo
     someProperties = new Properties();
     someProperties.setProperty(someKey, someValue);
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     Properties anotherProperties = new Properties();
     anotherProperties.setProperty(someKey, anotherValue);
@@ -504,7 +556,7 @@ public class DefaultConfigTest {
     someProperties.setProperty("mediumDateProperty", "2016-09-28 15:10:10");
     someProperties.setProperty("longDateProperty", "2016-09-28 15:10:10.123");
     someProperties.setProperty("stringProperty", "someString");
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -534,7 +586,7 @@ public class DefaultConfigTest {
     someProperties.setProperty("mediumDateProperty", "2016-09-28 15:10:10");
     someProperties.setProperty("longDateProperty", "2016-09-28 15:10:10.123");
     someProperties.setProperty("stringProperty", "someString");
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -553,7 +605,7 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty("enumProperty", "someValue");
     someProperties.setProperty("stringProperty", "someString");
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -571,7 +623,7 @@ public class DefaultConfigTest {
     someProperties = new Properties();
     someProperties.setProperty("durationProperty", "2D3H4m5S123ms");
     someProperties.setProperty("stringProperty", "someString");
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);
@@ -603,7 +655,7 @@ public class DefaultConfigTest {
     someProperties.putAll(ImmutableMap
         .of(someKey, someLocalFileValue, anotherKey, someLocalFileValue, keyToBeDeleted,
             keyToBeDeletedValue, yetAnotherKey, yetAnotherValue));
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
     someSourceType = ConfigSourceType.LOCAL;
     when(configRepository.getSourceType()).thenReturn(someSourceType);
 
@@ -787,7 +839,7 @@ public class DefaultConfigTest {
       someProperties.setProperty(someKeyPrefix + i, someValuePrefix + i);
     }
 
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
             new DefaultConfig(someNamespace, configRepository);
@@ -800,7 +852,7 @@ public class DefaultConfigTest {
 
   @Test
   public void testGetPropertyNamesWithNullProp() {
-    when(configRepository.getConfig()).thenReturn(null);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
             new DefaultConfig(someNamespace, configRepository);
@@ -820,7 +872,7 @@ public class DefaultConfigTest {
     //set up config repo
     someProperties = new Properties();
     someProperties.setProperty(someKey, someValue);
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository();
 
     DefaultConfig defaultConfig =
             new DefaultConfig(someNamespace, configRepository);
@@ -847,6 +899,8 @@ public class DefaultConfigTest {
     ConfigSourceType someSourceType = ConfigSourceType.REMOTE;
 
     when(configRepository.getConfig()).thenThrow(mock(RuntimeException.class));
+    when(configRepository.getSequenceConfig()).thenThrow(mock(RuntimeException.class));
+
 
     DefaultConfig defaultConfig =
         new DefaultConfig(someNamespace, configRepository);

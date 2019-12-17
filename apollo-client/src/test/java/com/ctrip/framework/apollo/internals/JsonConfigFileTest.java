@@ -7,6 +7,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import org.junit.Before;
@@ -43,7 +45,7 @@ public class JsonConfigFileTest {
 
     someSourceType = ConfigSourceType.LOCAL;
 
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository(someProperties);
     when(configRepository.getSourceType()).thenReturn(someSourceType);
 
     JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
@@ -57,7 +59,7 @@ public class JsonConfigFileTest {
 
   @Test
   public void testWhenHasNoContent() throws Exception {
-    when(configRepository.getConfig()).thenReturn(null);
+    mockConfigRepository(null);
 
     JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
 
@@ -67,7 +69,8 @@ public class JsonConfigFileTest {
 
   @Test
   public void testWhenConfigRepositoryHasError() throws Exception {
-    when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
+//    when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
+    when(configRepository.getSequenceConfig()).thenThrow(new RuntimeException("someError"));
 
     JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
 
@@ -86,7 +89,7 @@ public class JsonConfigFileTest {
 
     someSourceType = ConfigSourceType.LOCAL;
 
-    when(configRepository.getConfig()).thenReturn(someProperties);
+    mockConfigRepository(someProperties);
     when(configRepository.getSourceType()).thenReturn(someSourceType);
 
     JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);
@@ -106,6 +109,21 @@ public class JsonConfigFileTest {
     assertEquals(anotherSourceType, configFile.getSourceType());
   }
 
+  private void mockConfigRepository(Properties someProperties) {
+    when(configRepository.getConfig()).thenReturn(someProperties);
+
+    if(someProperties!=null) {
+
+      LinkedHashMap linkedHashMap = new LinkedHashMap();
+      linkedHashMap.putAll(someProperties);
+      when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
+    }
+    else{
+      when(configRepository.getSequenceConfig()).thenReturn(null);
+    }
+
+  }
+
   @Test
   public void testWhenConfigRepositoryHasErrorAndThenRecovered() throws Exception {
     Properties someProperties = new Properties();
@@ -115,7 +133,7 @@ public class JsonConfigFileTest {
 
     someSourceType = ConfigSourceType.LOCAL;
 
-    when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
+    when(configRepository.getSequenceConfig()).thenThrow(new RuntimeException("someError"));
     when(configRepository.getSourceType()).thenReturn(someSourceType);
 
     JsonConfigFile configFile = new JsonConfigFile(someNamespace, configRepository);

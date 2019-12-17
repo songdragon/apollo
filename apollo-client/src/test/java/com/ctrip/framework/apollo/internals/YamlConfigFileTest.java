@@ -8,6 +8,8 @@ import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
 import com.ctrip.framework.apollo.util.yaml.YamlParser;
+
+import java.util.LinkedHashMap;
 import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,13 +47,24 @@ public class YamlConfigFileTest {
     yamlProperties.setProperty("someKey", "someValue");
 
     when(configRepository.getConfig()).thenReturn(someProperties);
+    LinkedHashMap linkedHashMap=new LinkedHashMap();
+    linkedHashMap.putAll(someProperties);
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
     when(configRepository.getSourceType()).thenReturn(someSourceType);
     when(yamlParser.yamlToProperties(someContent)).thenReturn(yamlProperties);
+
+    LinkedHashMap yamlLinkedHashMap=new LinkedHashMap();
+    yamlLinkedHashMap.putAll(yamlProperties);
+    when(yamlParser.yamlToSequenceProperties(someContent)).thenReturn(yamlLinkedHashMap);
+
 
     YamlConfigFile configFile = new YamlConfigFile(someNamespace, configRepository);
 
     assertSame(someContent, configFile.getContent());
-    assertSame(yamlProperties, configFile.asProperties());
+    //因为新的实现，所以不是同一个对象，改为判断内容
+    assertEquals(yamlProperties, configFile.asProperties());
+    //因为新的实现，same的应为asSequenceProperties返回结果
+    assertSame(yamlLinkedHashMap, configFile.asSequenceProperties());
   }
 
   @Test
@@ -77,8 +90,13 @@ public class YamlConfigFileTest {
     someSourceType = ConfigSourceType.LOCAL;
 
     when(configRepository.getConfig()).thenReturn(someProperties);
+    LinkedHashMap linkedHashMap=new LinkedHashMap();
+    linkedHashMap.putAll(someProperties);
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
     when(configRepository.getSourceType()).thenReturn(someSourceType);
     when(yamlParser.yamlToProperties(someInvalidContent)).thenThrow(new RuntimeException("some exception"));
+    when(yamlParser.yamlToSequenceProperties(someInvalidContent)).thenThrow(new RuntimeException("some exception"));
+
 
     YamlConfigFile configFile = new YamlConfigFile(someNamespace, configRepository);
 
@@ -98,6 +116,7 @@ public class YamlConfigFileTest {
   @Test
   public void testWhenConfigRepositoryHasError() throws Exception {
     when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
+    when(configRepository.getSequenceConfig()).thenThrow(new RuntimeException("someError"));
 
     YamlConfigFile configFile = new YamlConfigFile(someNamespace, configRepository);
 
@@ -127,15 +146,22 @@ public class YamlConfigFileTest {
     anotherYamlProperties.setProperty("anotherKey", "anotherValue");
 
     when(configRepository.getConfig()).thenReturn(someProperties);
+    LinkedHashMap linkedHashMap=new LinkedHashMap();
+    linkedHashMap.putAll(someProperties);
+    when(configRepository.getSequenceConfig()).thenReturn(linkedHashMap);
     when(configRepository.getSourceType()).thenReturn(someSourceType);
     when(yamlParser.yamlToProperties(someValue)).thenReturn(someYamlProperties);
-    when(yamlParser.yamlToProperties(anotherValue)).thenReturn(anotherYamlProperties);
+    when(yamlParser.yamlToSequenceProperties(someValue)).thenReturn(new LinkedHashMap(someYamlProperties));
+
+    LinkedHashMap anotherLinkedHashMap=new LinkedHashMap(anotherYamlProperties);
+    when(yamlParser.yamlToSequenceProperties(anotherValue)).thenReturn(anotherLinkedHashMap);
 
     YamlConfigFile configFile = new YamlConfigFile(someNamespace, configRepository);
 
     assertEquals(someValue, configFile.getContent());
     assertEquals(someSourceType, configFile.getSourceType());
-    assertSame(someYamlProperties, configFile.asProperties());
+    //因为新的实现，所以不是同一个对象，改为判断内容
+    assertEquals(someYamlProperties, configFile.asProperties());
 
     Properties anotherProperties = new Properties();
     anotherProperties.setProperty(key, anotherValue);
@@ -147,7 +173,8 @@ public class YamlConfigFileTest {
 
     assertEquals(anotherValue, configFile.getContent());
     assertEquals(anotherSourceType, configFile.getSourceType());
-    assertSame(anotherYamlProperties, configFile.asProperties());
+    assertEquals(anotherYamlProperties, configFile.asProperties());
+    assertSame(anotherLinkedHashMap, configFile.asSequenceProperties());
   }
 
   @Test
@@ -163,8 +190,13 @@ public class YamlConfigFileTest {
     someYamlProperties.setProperty("someKey", "someValue");
 
     when(configRepository.getConfig()).thenThrow(new RuntimeException("someError"));
+    when(configRepository.getSequenceConfig()).thenThrow(new RuntimeException("someError"));
     when(configRepository.getSourceType()).thenReturn(someSourceType);
     when(yamlParser.yamlToProperties(someValue)).thenReturn(someYamlProperties);
+
+    LinkedHashMap linkedHashMap=new LinkedHashMap();
+    linkedHashMap.putAll(someYamlProperties);
+    when(yamlParser.yamlToSequenceProperties(someValue)).thenReturn(linkedHashMap);
 
     YamlConfigFile configFile = new YamlConfigFile(someNamespace, configRepository);
 
@@ -178,6 +210,7 @@ public class YamlConfigFileTest {
     assertTrue(configFile.hasContent());
     assertEquals(someValue, configFile.getContent());
     assertEquals(someSourceType, configFile.getSourceType());
-    assertSame(someYamlProperties, configFile.asProperties());
+    assertEquals(someYamlProperties, configFile.asProperties());
+    assertSame(linkedHashMap, configFile.asSequenceProperties());
   }
 }

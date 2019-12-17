@@ -6,6 +6,8 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -119,6 +121,11 @@ public class DefaultConfigManagerTest {
 
             @Override
             protected void update(Properties newProperties) {
+
+            }
+
+            @Override
+            protected void update(Map newProperties) {
 
             }
 

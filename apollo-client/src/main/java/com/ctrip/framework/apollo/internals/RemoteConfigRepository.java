@@ -1,7 +1,9 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -96,6 +98,18 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
 
   @Override
   public Properties getConfig() {
+    Properties properties=new Properties();
+    properties.putAll(getSequenceConfig());
+    return properties;
+  }
+
+  /**
+   * Get the config from this repository with config origin order.
+   *
+   * @return config
+   */
+  @Override
+  public LinkedHashMap getSequenceConfig() {
     if (m_configCache.get() == null) {
       this.sync();
     }
@@ -157,8 +171,8 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
     }
   }
 
-  private Properties transformApolloConfigToProperties(ApolloConfig apolloConfig) {
-    Properties result = new Properties();
+  private LinkedHashMap transformApolloConfigToProperties(ApolloConfig apolloConfig) {
+    LinkedHashMap result = new LinkedHashMap();
     result.putAll(apolloConfig.getConfigurations());
     return result;
   }

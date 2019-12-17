@@ -10,6 +10,8 @@ import com.ctrip.framework.apollo.ConfigFileChangeListener;
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigFileChangeEvent;
 import com.google.common.util.concurrent.SettableFuture;
+
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import java.util.concurrent.TimeUnit;
@@ -43,6 +45,8 @@ public class PropertiesConfigFileTest {
     someProperties.setProperty(someKey, someValue);
 
     when(configRepository.getConfig()).thenReturn(someProperties);
+    when(configRepository.getSequenceConfig()).thenReturn(new LinkedHashMap(someProperties));
+
 
     PropertiesConfigFile configFile = new PropertiesConfigFile(someNamespace, configRepository);
 
@@ -81,6 +85,7 @@ public class PropertiesConfigFileTest {
     someProperties.setProperty(someKey, someValue);
 
     when(configRepository.getConfig()).thenReturn(someProperties);
+    when(configRepository.getSequenceConfig()).thenReturn(new LinkedHashMap(someProperties));
 
     PropertiesConfigFile configFile = new PropertiesConfigFile(someNamespace, configRepository);
 

@@ -2,6 +2,7 @@ package com.ctrip.framework.apollo.core.utils;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -17,6 +18,22 @@ public class PropertiesUtil {
   public static String toString(Properties properties) throws IOException {
     StringWriter writer = new StringWriter();
     properties.store(writer, null);
+    StringBuffer stringBuffer = writer.getBuffer();
+    filterPropertiesComment(stringBuffer);
+    return stringBuffer.toString();
+  }
+
+  /**
+   * Transform the properties to string format
+   * @param properties the properties object
+   * @return the string containing the properties
+   * @throws IOException
+   */
+  public static String toString(Map properties) throws IOException {
+    StringWriter writer = new StringWriter();
+    Properties decorated=new Properties();
+    decorated.putAll(properties);
+    decorated.store(writer, null);
     StringBuffer stringBuffer = writer.getBuffer();
     filterPropertiesComment(stringBuffer);
     return stringBuffer.toString();

@@ -28,9 +28,16 @@ public class YamlParser {
   /**
    * Transform yaml content to properties
    */
+  @Deprecated
   public Properties yamlToProperties(String yamlContent) {
-    Yaml yaml = createYaml();
     final Properties result = new Properties();
+    result.putAll(yamlToSequenceProperties(yamlContent));
+    return result;
+  }
+
+  public LinkedHashMap yamlToSequenceProperties(String yamlContent) {
+    Yaml yaml = createYaml();
+    final LinkedHashMap result = new LinkedHashMap();
     process(new MatchCallback() {
       @Override
       public void process(Properties properties, Map<String, Object> map) {
