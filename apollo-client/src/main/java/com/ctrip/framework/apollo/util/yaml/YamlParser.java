@@ -1,5 +1,7 @@
 package com.ctrip.framework.apollo.util.yaml;
 
+import com.ctrip.framework.apollo.util.OrderedProperties;
+import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,7 +32,7 @@ public class YamlParser {
    */
   public Properties yamlToProperties(String yamlContent) {
     Yaml yaml = createYaml();
-    final Properties result = new Properties();
+    final Properties result = PropertiesFactory.getPropertiesObject();
     process(new MatchCallback() {
       @Override
       public void process(Properties properties, Map<String, Object> map) {
@@ -91,7 +93,7 @@ public class YamlParser {
   }
 
   private boolean process(Map<String, Object> map, MatchCallback callback) {
-    Properties properties = new Properties();
+    Properties properties = PropertiesFactory.getPropertiesObject();
     properties.putAll(getFlattenedMap(map));
 
     if (logger.isDebugEnabled()) {

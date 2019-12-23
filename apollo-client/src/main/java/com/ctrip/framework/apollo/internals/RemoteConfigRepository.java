@@ -1,6 +1,7 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -158,7 +159,7 @@ public class RemoteConfigRepository extends AbstractConfigRepository {
   }
 
   private Properties transformApolloConfigToProperties(ApolloConfig apolloConfig) {
-    Properties result = new Properties();
+    Properties result =  PropertiesFactory.getPropertiesObject();
     result.putAll(apolloConfig.getConfigurations());
     return result;
   }

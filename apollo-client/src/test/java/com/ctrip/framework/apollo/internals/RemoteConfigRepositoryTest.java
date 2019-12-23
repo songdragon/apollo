@@ -1,5 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
@@ -94,8 +95,9 @@ public class RemoteConfigRepositoryTest {
   public void testLoadConfig() throws Exception {
     String someKey = "someKey";
     String someValue = "someValue";
-    Map<String, String> configurations = Maps.newHashMap();
+    Map<String, String> configurations = Maps.newLinkedHashMap();
     configurations.put(someKey, someValue);
+    configurations.put("someKey2", "someValue2");
     ApolloConfig someApolloConfig = assembleApolloConfig(configurations);
 
     when(someResponse.getStatusCode()).thenReturn(200);
@@ -105,9 +107,14 @@ public class RemoteConfigRepositoryTest {
 
     Properties config = remoteConfigRepository.getConfig();
 
-    assertEquals(configurations, config);
+//    assertEquals(configurations, config);
+    assertTrue(configurations.equals(config));
     assertEquals(ConfigSourceType.REMOTE, remoteConfigRepository.getSourceType());
     remoteConfigLongPollService.stopLongPollingRefresh();
+
+    String[] actualArrays = config.keySet().toArray(new String[]{});
+    String[] expectedArrays={"someKey","someKey2"};
+    assertArrayEquals(expectedArrays,actualArrays);
   }
 
   @Test(expected = ApolloConfigException.class)
