@@ -14,6 +14,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.InvalidPropertiesFormatException;
@@ -307,6 +308,12 @@ public class OrderedProperties extends Properties {
       properties.put((String)e.getKey(),(String) e.getValue());
     }
   }
+
+  @Override
+  public Set<Object> keySet() {
+    return (Set)properties.keySet();
+  }
+
 
   /**
    * Creates a new instance that will have both the same property entries and

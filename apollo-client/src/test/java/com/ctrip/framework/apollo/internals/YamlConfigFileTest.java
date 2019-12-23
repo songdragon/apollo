@@ -55,6 +55,34 @@ public class YamlConfigFileTest {
   }
 
   @Test
+  public void testWhenHasContentWithOrder() throws Exception {
+    Properties someProperties = new Properties();
+    String key = ConfigConsts.CONFIG_FILE_CONTENT_KEY;
+    String someContent = "someKey: 'someValue'\nsomeKey2: 'someValue2'";
+    someProperties.setProperty(key, someContent);
+    someSourceType = ConfigSourceType.LOCAL;
+
+//    Properties yamlProperties = new Properties();
+//    yamlProperties.setProperty("someKey", "someValue");
+//    yamlProperties.setProperty("someKey2", "someValue2");
+
+    Properties yamlProperties=new YamlParser().yamlToProperties(someContent);
+
+    when(configRepository.getConfig()).thenReturn(someProperties);
+    when(configRepository.getSourceType()).thenReturn(someSourceType);
+    when(yamlParser.yamlToProperties(someContent)).thenReturn(yamlProperties);
+
+    YamlConfigFile configFile = new YamlConfigFile(someNamespace, configRepository);
+
+    assertSame(someContent, configFile.getContent());
+    assertSame(yamlProperties, configFile.asProperties());
+
+    String[] actualArrays = configFile.asProperties().keySet().toArray(new String[]{});
+    String[] expectedArrays={"someKey","someKey2"};
+    assertArrayEquals(expectedArrays,actualArrays);
+  }
+
+  @Test
   public void testWhenHasNoContent() throws Exception {
     when(configRepository.getConfig()).thenReturn(null);
 
