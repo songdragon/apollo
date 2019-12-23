@@ -64,21 +64,6 @@ public class OrderedProperties extends Properties {
     return (value == null) ? defaultValue : value;
   }
 
-  @Override
-  public synchronized Object get(Object key) {
-    return properties.get(key);
-  }
-
-  @Override
-  public synchronized Object put(Object key, Object value) {
-    // Make sure the value is not null
-    if (value == null) {
-      throw new NullPointerException();
-    }
-
-    // Makes sure the key is not already in the hashtable.
-    return properties.put((String)key,(String)value);
-  }
 
   /**
    * See {@link Properties#setProperty(String, String)}.
@@ -123,6 +108,48 @@ public class OrderedProperties extends Properties {
   @Override
   public boolean isEmpty() {
     return properties.isEmpty();
+  }
+
+  /**
+   * See {@link Properties#containsKey(Object)} and {@link java.util.Hashtable#containsKey(Object)}.
+   * Override to avoid invocation on Properties's containsKey.
+   */
+  @Override
+  public boolean containsKey(Object key) {
+    return properties.containsKey(key);
+  }
+
+  /**
+   * See {@link Properties#containsValue(Object)} and {@link java.util.Hashtable#containsValue(Object)}.
+   * Override to avoid invocation on Properties's containsValue.
+   */
+  @Override
+  public boolean containsValue(Object value) {
+    return properties.containsValue(value);
+  }
+
+  /**
+   * See {@link Properties#get(Object)} and {@link java.util.Hashtable#get(Object)}.
+   * Override due to invocation on Properties's get.
+   */
+  @Override
+  public synchronized Object get(Object key) {
+    return properties.get(key);
+  }
+
+  /**
+   * See {@link Properties#put(Object, Object)} and {@link java.util.Hashtable#put(Object, Object)}.
+   * Override due to invocation on Properties's put.
+   */
+  @Override
+  public synchronized Object put(Object key, Object value) {
+    // Make sure the value is not null
+    if (value == null) {
+      throw new NullPointerException();
+    }
+
+    // Makes sure the key is not already in the hashtable.
+    return properties.put((String)key,(String)value);
   }
 
   /**
@@ -303,6 +330,7 @@ public class OrderedProperties extends Properties {
    *
 
    */
+  @Override
   public synchronized void putAll(Map<? extends Object, ? extends Object> t) {
     for (Map.Entry<? extends Object, ? extends Object> e : t.entrySet()) {
       properties.put((String)e.getKey(),(String) e.getValue());
