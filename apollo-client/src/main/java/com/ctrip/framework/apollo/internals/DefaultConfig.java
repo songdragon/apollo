@@ -1,6 +1,8 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+import com.ctrip.framework.apollo.util.OrderedProperties;
+import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -88,7 +90,7 @@ public class DefaultConfig extends AbstractConfig implements RepositoryChangeLis
 
     // step 4: check properties file from classpath
     if (value == null && m_resourceProperties != null) {
-      value = (String) m_resourceProperties.get(key);
+      value = (String) m_resourceProperties.getProperty(key);
     }
 
     if (value == null && m_configProperties.get() == null && m_warnLogRateLimiter.tryAcquire()) {
@@ -133,7 +135,7 @@ public class DefaultConfig extends AbstractConfig implements RepositoryChangeLis
     }
 
     ConfigSourceType sourceType = m_configRepository.getSourceType();
-    Properties newConfigProperties = new Properties();
+    Properties newConfigProperties =  PropertiesFactory.getPropertiesObject();
     newConfigProperties.putAll(newProperties);
 
     Map<String, ConfigChange> actualChanges = updateAndCalcConfigChanges(newConfigProperties, sourceType);
@@ -213,7 +215,7 @@ public class DefaultConfig extends AbstractConfig implements RepositoryChangeLis
     Properties properties = null;
 
     if (in != null) {
-      properties = new Properties();
+      properties =  PropertiesFactory.getPropertiesObject();
 
       try {
         properties.load(in);

@@ -1,6 +1,8 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+import com.ctrip.framework.apollo.util.OrderedProperties;
+import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -72,7 +74,7 @@ public abstract class AbstractConfigFile implements ConfigFile, RepositoryChange
     if (newProperties.equals(m_configProperties.get())) {
       return;
     }
-    Properties newConfigProperties = new Properties();
+    Properties newConfigProperties =  PropertiesFactory.getPropertiesObject();
     newConfigProperties.putAll(newProperties);
 
     String oldValue = getContent();

@@ -11,6 +11,8 @@ import com.ctrip.framework.apollo.model.ConfigChangeEvent;
 import com.ctrip.framework.apollo.tracer.Tracer;
 import com.ctrip.framework.apollo.tracer.spi.Transaction;
 import com.ctrip.framework.apollo.util.ConfigUtil;
+import com.ctrip.framework.apollo.util.OrderedProperties;
+import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import com.ctrip.framework.apollo.util.function.Functions;
 import com.ctrip.framework.apollo.util.parser.Parsers;
 import com.google.common.base.Function;
@@ -493,11 +495,11 @@ public abstract class AbstractConfig implements Config {
   List<ConfigChange> calcPropertyChanges(String namespace, Properties previous,
                                          Properties current) {
     if (previous == null) {
-      previous = new Properties();
+      previous =  PropertiesFactory.getPropertiesObject();
     }
 
     if (current == null) {
-      current = new Properties();
+      current =  PropertiesFactory.getPropertiesObject();
     }
 
     Set<String> previousKeys = previous.stringPropertyNames();

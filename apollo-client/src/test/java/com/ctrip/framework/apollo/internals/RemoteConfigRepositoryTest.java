@@ -105,7 +105,8 @@ public class RemoteConfigRepositoryTest {
 
     Properties config = remoteConfigRepository.getConfig();
 
-    assertEquals(configurations, config);
+//    assertEquals(configurations, config);
+    assertTrue(configurations.equals(config));
     assertEquals(ConfigSourceType.REMOTE, remoteConfigRepository.getSourceType());
     remoteConfigLongPollService.stopLongPollingRefresh();
   }
