@@ -138,6 +138,15 @@ public class OrderedProperties extends Properties {
   }
 
   /**
+   * See {@link Properties#contains(Object)} and {@link java.util.Hashtable#contains(Object)}.
+   *  Override due to invocation on Properties's get.
+   */
+  @Override
+  public synchronized boolean contains(Object key) {
+    return this.containsKey(key);
+  }
+
+  /**
    * See {@link Properties#put(Object, Object)} and {@link java.util.Hashtable#put(Object, Object)}.
    * Override due to invocation on Properties's put.
    */
