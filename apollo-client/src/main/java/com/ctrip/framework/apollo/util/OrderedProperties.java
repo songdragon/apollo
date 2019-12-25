@@ -386,6 +386,7 @@ public class OrderedProperties extends Properties {
   @Override
   public synchronized Enumeration<Object> elements() {
     return new Vector<Object>(properties.values()).elements();
+
   }
 
   /**

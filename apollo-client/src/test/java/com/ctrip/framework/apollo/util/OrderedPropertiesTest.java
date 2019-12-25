@@ -65,6 +65,7 @@ public class OrderedPropertiesTest {
     assertTrue(values.hasMoreElements());
     String value2= (String) values.nextElement();
     assertEquals("value2",value2);
+
   }
 
   @Test
@@ -130,6 +131,7 @@ public class OrderedPropertiesTest {
     assertNotSame(copy,orderedProperties);
     assertEquals(orderedProperties,copy);
   }
+
 
   /**
    * Test cases for JDK1.8
