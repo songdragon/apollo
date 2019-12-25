@@ -14,9 +14,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.InvalidPropertiesFormatException;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -26,7 +26,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.Vector;
 
-
+/**
+ * An OrderedProperties instance will keep apperance order in config file.
+ * @see https://github.com/etiennestuder/java-ordered-properties/blob/master/src/main/java/nu/studer/java/util/OrderedProperties.java
+ */
 public class OrderedProperties extends Properties {
 
   private static final long serialVersionUID = -5958921339581782524L;
@@ -189,6 +192,7 @@ public class OrderedProperties extends Properties {
   /**
    * See {@link Properties#load(InputStream)}.
    */
+  @Override
   public void load(InputStream stream) throws IOException {
     CustomProperties customProperties = new CustomProperties(this.properties);
     customProperties.load(stream);
@@ -351,6 +355,139 @@ public class OrderedProperties extends Properties {
     return (Set)properties.keySet();
   }
 
+  /**
+   * @see {@link Hashtable#clear()}
+   * TODO: to test
+   */
+  @Override
+  public synchronized void clear() {
+    properties.clear();
+  }
+
+  /**
+   * Clone a new OrderedProperties by deep copy
+   * @see {@link Hashtable#clone()}
+   * TODO: to test
+   * @return
+   */
+  @Override
+  public synchronized Object clone() {
+    OrderedProperties orderedProperties= (OrderedProperties) super.clone();
+    orderedProperties.properties=new LinkedHashMap<>(properties);
+    return orderedProperties;
+  }
+
+  /**
+   * Unsupported
+   * @see {@link Hashtable#elements()}
+   * TODO: to test
+   * @return
+   */
+  @Override
+  public synchronized Enumeration<Object> elements() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @see {@link Hashtable#getOrDefault(Object, Object)}
+   * @param key
+   * @param defaultValue
+   * @return
+   * @since 1.8
+   */
+//  public synchronized Object getOrDefault(Object key, Object defaultValue) {
+//    return this.getProperty((String)key, (String)defaultValue);
+//  }
+
+  /**
+   * @see {@link Hashtable#keys}
+   * @return
+   */
+  @Override
+  public synchronized Enumeration<Object> keys() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * @see {@link Hashtable#remove(Object)}
+   * @param key
+   * @return
+   * TODO: to test
+   */
+  @Override
+  public synchronized Object remove(Object key) {
+    return properties.remove(key);
+  }
+
+  /**
+   * @see {@link Hashtable#remove(Object, Object)}
+   * @param key
+   * @param value
+   * @return
+   *  @since 1.8
+   */
+//  @Override
+//  public synchronized boolean remove(Object key, Object value) {
+//    return properties.remove((String)key, (String)value);
+//  }
+
+  /**
+   * @see {@link Hashtable#replace(Object, Object, Object)}
+   * @param key
+   * @param oldValue
+   * @param newValue
+   * @return
+   *  \@since 1.8
+   */
+//  @Override
+//  public synchronized boolean replace(Object key, Object oldValue, Object newValue) {
+//    return properties.replace((String)key, (String)oldValue, (String)newValue);
+//  }
+
+
+  /**
+   * @see {@link Hashtable#replace(Object, Object)}
+   * @param key
+   * @param value
+   * @return
+   *  @since 1.8
+   */
+//  @Override
+//  public synchronized Object replace(Object key, Object value) {
+//    return properties.replace((String)key, (String)value);
+//  }
+
+  /**
+   * @see {@link Hashtable#replaceAll(BiFunction)}
+   * @param function
+   *  @since 1.8
+   */
+//  @Override
+//  public synchronized void replaceAll(BiFunction<? super Object, ? super Object, ?> function) {
+//    throw new UnsupportedOperationException();
+//  }
+
+  /**
+   * see {@link Hashtable#values()}
+   * @return
+   * TODO: to test
+   */
+  @Override
+  public Collection<Object> values() {
+    return (Collection)properties.values();
+  }
+
+  /**
+   * see {@link Hashtable#putIfAbsent(Object, Object)}
+   * @param key
+   * @param value
+   * @return
+   *  @since 1.8
+   */
+//  @Override
+//  public synchronized Object putIfAbsent(Object key, Object value) {
+//    return properties.putIfAbsent((String)key, (String)value);
+//  }
 
   /**
    * Creates a new instance that will have both the same property entries and
