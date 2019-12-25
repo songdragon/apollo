@@ -3,6 +3,7 @@ package com.ctrip.framework.apollo.util;
 import static org.junit.Assert.*;
 
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,9 +56,16 @@ public class OrderedPropertiesTest {
     assertEquals(orderedProperties,clone);
   }
 
-  @Test(expected = UnsupportedOperationException.class)
+  @Test
   public void testElements(){
-    orderedProperties.elements();
+    Enumeration<Object> values = orderedProperties.elements();
+    assertTrue(values.hasMoreElements());
+    String value1= (String) values.nextElement();
+    assertEquals("value1",value1);
+    assertTrue(values.hasMoreElements());
+    String value2= (String) values.nextElement();
+    assertEquals("value2",value2);
+
   }
 
   @Test
@@ -76,6 +84,54 @@ public class OrderedPropertiesTest {
     assertTrue(values.contains("value1"));
     assertTrue(values.contains("value2"));
   }
+
+  @Test
+  public void testRemoveProperties(){
+    String removedValue = orderedProperties.removeProperty("key1");
+    assertEquals("value1",removedValue);
+
+    removedValue=orderedProperties.removeProperty("key1");
+    assertEquals(null,removedValue);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void testPutNull(){
+    orderedProperties.put("key3",null);
+  }
+
+  @Test
+  public void testPropertyNames(){
+    Enumeration<String> propertyNames = orderedProperties.propertyNames();
+    while(propertyNames.hasMoreElements()){
+      String key=propertyNames.nextElement();
+      assertTrue(key.equals("key1")||key.equals("key2"));
+    }
+  }
+
+  @Test
+  public void testToJdkProperties(){
+    Properties properties=orderedProperties.toJdkProperties();
+    assertEquals("value1",properties.getProperty("key1"));
+    assertEquals("value2",properties.getProperty("key2"));
+  }
+
+  @Test
+  public void testKeys(){
+    Enumeration<Object> keys = orderedProperties.keys();
+    assertTrue(keys.hasMoreElements());
+    assertEquals("key1",keys.nextElement());
+    assertTrue(keys.hasMoreElements());
+    assertEquals("key2",keys.nextElement());
+
+  }
+
+  @Test
+  public void testCopyOf(){
+    OrderedProperties copy=OrderedProperties.copyOf(orderedProperties);
+    assertNotSame(copy,orderedProperties);
+    assertEquals(orderedProperties,copy);
+  }
+
 
   /**
    * Test cases for JDK1.8

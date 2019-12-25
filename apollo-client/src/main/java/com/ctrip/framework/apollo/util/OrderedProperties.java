@@ -378,14 +378,15 @@ public class OrderedProperties extends Properties {
   }
 
   /**
-   * Unsupported
+   * return value elements
    * @see {@link Hashtable#elements()}
    * TODO: to test
    * @return
    */
   @Override
   public synchronized Enumeration<Object> elements() {
-    throw new UnsupportedOperationException();
+    return new Vector<Object>(properties.values()).elements();
+
   }
 
   /**
@@ -405,7 +406,7 @@ public class OrderedProperties extends Properties {
    */
   @Override
   public synchronized Enumeration<Object> keys() {
-    throw new UnsupportedOperationException();
+    return new Vector<Object>(properties.keySet()).elements();
   }
 
   /**
