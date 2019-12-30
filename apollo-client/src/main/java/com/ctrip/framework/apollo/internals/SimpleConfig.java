@@ -1,8 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
-import com.ctrip.framework.apollo.util.OrderedProperties;
-import com.ctrip.framework.apollo.util.OrderedProperties.OrderedPropertiesBuilder;
 import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.util.Collections;
 import java.util.List;
