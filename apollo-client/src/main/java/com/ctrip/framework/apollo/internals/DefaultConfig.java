@@ -6,6 +6,7 @@ import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -117,7 +118,7 @@ public class DefaultConfig extends AbstractConfig implements RepositoryChangeLis
 
   private Set<String> stringPropertyNames(Properties properties) {
     //jdk9以下版本Properties#enumerateStringProperties方法存在性能问题，keys() + get(k) 重复迭代, jdk9之后改为entrySet遍历.
-    Map<String, String> h = new HashMap<>();
+    Map<String, String> h = new LinkedHashMap<>();
     for (Map.Entry<Object, Object> e : properties.entrySet()) {
       Object k = e.getKey();
       Object v = e.getValue();
