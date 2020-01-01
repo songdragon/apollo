@@ -5,7 +5,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -14,8 +13,11 @@ import java.util.Set;
  * An OrderedProperties instance will keep appearance order in config file.
  *
  * <strong>
- * Warning: It should be noticed that stream APIs or JDk1.8 APIs( listed in https://github.com/ctripcorp/apollo/pull/2861) are not
+ * Warnings:
+ * 1. It should be noticed that stream APIs or JDk1.8 APIs( listed in https://github.com/ctripcorp/apollo/pull/2861) are not
  * implemented here.
+ * 2. {@link Properties} implementation are different between JDK1.8 and later JDKs. At least, {@link Properties} have an individual
+ * implementation in JDK10. Hence, there should be an individual putAll method here.
  * </strong>
  *
  */
@@ -85,14 +87,6 @@ public class OrderedProperties extends Properties {
     if (key instanceof String) {
       propertyNames.add((String) key);
     }
-  }
-
-  @Override
-  public synchronized void putAll(Map<?, ?> t) {
-    for(Entry entry:t.entrySet()){
-      put(entry.getKey(),entry.getValue());
-    }
-
   }
 
   @Override
