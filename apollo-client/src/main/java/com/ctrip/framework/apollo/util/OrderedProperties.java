@@ -4,7 +4,13 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * An OrderedProperties instance will keep apperance order in config file.
+ * An OrderedProperties instance will keep appearance order in config file.
+ *
+ * <strong>
+ * Warning: It should be noticed that stream APIs or JDk1.8 APIs( listed in https://github.com/ctripcorp/apollo/pull/2861) are not
+ * implemented here.
+ * </strong>
+ *
  */
 public class OrderedProperties extends Properties {
 
