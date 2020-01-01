@@ -57,18 +57,6 @@ public class OrderedPropertiesTest {
   }
 
   @Test
-  public void testElements(){
-    Enumeration<Object> values = orderedProperties.elements();
-    assertTrue(values.hasMoreElements());
-    String value1= (String) values.nextElement();
-    assertEquals("value1",value1);
-    assertTrue(values.hasMoreElements());
-    String value2= (String) values.nextElement();
-    assertEquals("value2",value2);
-
-  }
-
-  @Test
   public void testRemove(){
     Object value1 = orderedProperties.remove("key1");
     assertEquals("value1",value1);
