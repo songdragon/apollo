@@ -1,7 +1,14 @@
 package com.ctrip.framework.apollo.util;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * An OrderedProperties instance will keep appearance order in config file.
