@@ -57,7 +57,6 @@ public class OrderedPropertiesTest {
   }
 
   @Test
-  @Ignore
   public void testElements(){
     Enumeration<Object> values = orderedProperties.elements();
     assertTrue(values.hasMoreElements());
@@ -76,6 +75,9 @@ public class OrderedPropertiesTest {
 
     value1=orderedProperties.remove("key1");
     assertNull(value1);
+
+    assertNull(orderedProperties.get("key1"));
+    assertFalse(orderedProperties.keySet().contains("key1"));
   }
 
   @Test
@@ -95,10 +97,9 @@ public class OrderedPropertiesTest {
   @Test
   public void testPropertyNames(){
     Enumeration<String> propertyNames = (Enumeration<String>) orderedProperties.propertyNames();
-    while(propertyNames.hasMoreElements()){
-      String key=propertyNames.nextElement();
-      assertTrue(key.equals("key1")||key.equals("key2"));
-    }
+    assertTrue(propertyNames.nextElement().equals("key1"));
+    assertTrue(propertyNames.nextElement().equals("key2"));
+
   }
 
 

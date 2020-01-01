@@ -9,9 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,12 +17,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.annotation.Order;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ctrip.framework.apollo.BaseIntegrationTest;
@@ -111,6 +111,28 @@ public class ConfigIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
+  public void testOrderGetConfigWithNoLocalFileButWithRemoteConfig() throws Exception {
+    String someKey1="someKey1";
+    String someValue1="someValue1";
+    String someKey2="someKey2";
+    String someValue2="someValue2";
+    Map<String,String> configurations=new LinkedHashMap<>();
+    configurations.put(someKey1,someValue1);
+    configurations.put(someKey2,someValue2);
+    ApolloConfig apolloConfig = assembleApolloConfig(ImmutableMap.copyOf(configurations));
+    ContextHandler handler = mockConfigServerHandler(HttpServletResponse.SC_OK, apolloConfig);
+    startServerWithHandlers(handler);
+
+    Config config = ConfigService.getAppConfig();
+
+    Set<String> propertyNames = config.getPropertyNames();
+    Iterator<String> it = propertyNames.iterator();
+    assertEquals(someKey1,it.next());
+    assertEquals(someKey2,it.next());
+
+  }
+
+  @Test
   public void testGetConfigWithLocalFileAndWithRemoteConfig() throws Exception {
     String someKey = "someKey";
     String someValue = "someValue";
@@ -126,6 +148,45 @@ public class ConfigIntegrationTest extends BaseIntegrationTest {
     Config config = ConfigService.getAppConfig();
 
     assertEquals(anotherValue, config.getProperty(someKey, null));
+  }
+
+  @Test
+  public void testOrderGetConfigWithLocalFileAndWithRemoteConfig() throws Exception {
+    String someKey = "someKey";
+    String someValue = "someValue";
+    String anotherValue = "anotherValue";
+
+    String someKey1="someKey1";
+    String someValue1="someValue1";
+    String anotherValue1="anotherValue1";
+    String someKey2="someKey2";
+    String someValue2="someValue2";
+
+    Properties properties = PropertiesFactory.getPropertiesObject();
+    properties.put(someKey, someValue);
+    properties.put(someKey1, someValue1);
+    properties.put(someKey2, someValue2);
+    createLocalCachePropertyFile(properties);
+
+    Map<String,String> configurations=new LinkedHashMap<>();
+    configurations.put(someKey,anotherValue);
+    configurations.put(someKey1,anotherValue1);
+    configurations.put(someKey2,someValue2);
+    ApolloConfig apolloConfig = assembleApolloConfig(ImmutableMap.copyOf(configurations));
+    ContextHandler handler = mockConfigServerHandler(HttpServletResponse.SC_OK, apolloConfig);
+    startServerWithHandlers(handler);
+
+    Config config = ConfigService.getAppConfig();
+
+    assertEquals(anotherValue, config.getProperty(someKey, null));
+
+    Set<String> propertyNames = config.getPropertyNames();
+    Iterator<String> it = propertyNames.iterator();
+    assertEquals(someKey,it.next());
+    assertEquals(someKey1,it.next());
+    assertEquals(someKey2,it.next());
+    assertEquals(anotherValue1,config.getProperty(someKey1,""));
+
   }
 
   @Test
@@ -156,6 +217,31 @@ public class ConfigIntegrationTest extends BaseIntegrationTest {
 
     Config config = ConfigService.getAppConfig();
     assertEquals(someValue, config.getProperty(someKey, null));
+  }
+
+  @Test
+  public void testOrderGetConfigWithLocalFileAndRemoteConfigError() throws Exception {
+    String someKey1 = "someKey1";
+    String someValue1 = "someValue1";
+    String someKey2 = "someKey2";
+    String someValue2 = "someValue2";
+    Properties properties = PropertiesFactory.getPropertiesObject();
+    properties.put(someKey1, someValue1);
+    properties.put(someKey2, someValue2);
+    createLocalCachePropertyFile(properties);
+
+    ContextHandler handler =
+            mockConfigServerHandler(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null);
+    startServerWithHandlers(handler);
+
+    Config config = ConfigService.getAppConfig();
+    assertEquals(someValue1, config.getProperty(someKey1, null));
+    assertEquals(someValue2, config.getProperty(someKey2, null));
+
+    Set<String> propertyNames = config.getPropertyNames();
+    Iterator<String> it = propertyNames.iterator();
+    assertEquals(someKey1,it.next());
+    assertEquals(someKey2,it.next());
   }
 
   @Test

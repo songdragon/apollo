@@ -1,13 +1,7 @@
 package com.ctrip.framework.apollo.util;
 
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * An OrderedProperties instance will keep apperance order in config file.
@@ -79,4 +73,25 @@ public class OrderedProperties extends Properties {
       propertyNames.add((String) key);
     }
   }
+
+  @Override
+  public synchronized void putAll(Map<?, ?> t) {
+    for(Entry entry:t.entrySet()){
+      put(entry.getKey(),entry.getValue());
+    }
+
+  }
+
+  @Override
+  public synchronized void clear() {
+    super.clear();
+    this.propertyNames.clear();
+  }
+
+  @Override
+  public synchronized Object remove(Object key) {
+    this.propertyNames.remove(key);
+    return super.remove(key);
+  }
+
 }
