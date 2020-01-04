@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -81,6 +82,13 @@ public class OrderedProperties extends Properties {
     }
 
     return new LinkedHashSet<>(entryMap.values());
+  }
+
+  @Override
+  public synchronized void putAll(Map<?, ?> t) {
+    for(Entry entry:t.entrySet()){
+      put(entry.getKey(),entry.getValue());
+    }
   }
 
   private void addPropertyName(Object key) {
