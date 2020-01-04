@@ -495,7 +495,7 @@ public abstract class AbstractConfig implements Config {
   List<ConfigChange> calcPropertyChanges(String namespace, Properties previous,
                                          Properties current) {
     if (previous == null) {
-      previous =  PropertiesFactory.getPropertiesObject();
+      previous = PropertiesFactory.getPropertiesObject();
     }
 
     if (current == null) {
