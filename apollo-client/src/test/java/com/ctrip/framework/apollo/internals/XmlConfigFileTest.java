@@ -7,12 +7,16 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.ctrip.framework.apollo.ConfigFileChangeListener;
+import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigFileChangeEvent;
+import com.ctrip.framework.apollo.util.factory.DefaultPropertiesFactory;
+import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Properties;
 
 import java.util.concurrent.TimeUnit;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +38,15 @@ public class XmlConfigFileTest {
   @Before
   public void setUp() throws Exception {
     someNamespace = "someName";
+
+    System.setProperty(PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE, "true");
+    PropertiesFactory propertiesFactory=new DefaultPropertiesFactory();
+    MockInjector.setInstance(PropertiesFactory.class, propertiesFactory);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    System.clearProperty(PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE);
   }
 
   @Test
