@@ -1,7 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
-import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -82,7 +81,7 @@ public class SimpleConfig extends AbstractConfig implements RepositoryChangeList
     if (newProperties.equals(m_configProperties)) {
       return;
     }
-    Properties newConfigProperties = PropertiesFactory.getPropertiesObject();
+    Properties newConfigProperties = propertiesFactory.getPropertiesInstance();
     newConfigProperties.putAll(newProperties);
 
     List<ConfigChange> changes = calcPropertyChanges(namespace, m_configProperties, newConfigProperties);

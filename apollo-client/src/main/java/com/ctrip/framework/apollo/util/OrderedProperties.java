@@ -3,8 +3,8 @@ package com.ctrip.framework.apollo.util;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -14,13 +14,13 @@ import java.util.Set;
  * An OrderedProperties instance will keep appearance order in config file.
  *
  * <strong>
- * Warnings:
- * 1. It should be noticed that stream APIs or JDk1.8 APIs( listed in https://github.com/ctripcorp/apollo/pull/2861) are not
- * implemented here.
- * 2. {@link Properties} implementation are different between JDK1.8 and later JDKs. At least, {@link Properties} have an individual
- * implementation in JDK10. Hence, there should be an individual putAll method here.
+ * Warnings: 1. It should be noticed that stream APIs or JDk1.8 APIs( listed in
+ * https://github.com/ctripcorp/apollo/pull/2861) are not implemented here. 2. {@link Properties}
+ * implementation are different between JDK1.8 and later JDKs. At least, {@link Properties} have an
+ * individual implementation in JDK10. Hence, there should be an individual putAll method here.
  * </strong>
  *
+ * @author songdragon@zts.io
  */
 public class OrderedProperties extends Properties {
 
@@ -35,6 +35,12 @@ public class OrderedProperties extends Properties {
   public synchronized Object put(Object key, Object value) {
     addPropertyName(key);
     return super.put(key, value);
+  }
+
+  private void addPropertyName(Object key) {
+    if (key instanceof String) {
+      propertyNames.add((String) key);
+    }
   }
 
   @Override
@@ -56,6 +62,7 @@ public class OrderedProperties extends Properties {
       public boolean hasMoreElements() {
         return i.hasNext();
       }
+
       @Override
       public Object nextElement() {
         return i.next();
@@ -86,14 +93,9 @@ public class OrderedProperties extends Properties {
 
   @Override
   public synchronized void putAll(Map<?, ?> t) {
-    for(Entry entry:t.entrySet()){
-      put(entry.getKey(),entry.getValue());
-    }
-  }
-
-  private void addPropertyName(Object key) {
-    if (key instanceof String) {
-      propertyNames.add((String) key);
+    super.putAll(t);
+    for (Object name : t.keySet()) {
+      addPropertyName(name);
     }
   }
 

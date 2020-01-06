@@ -1,7 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
-import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -89,7 +88,7 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
     if (m_fileProperties == null) {
       sync();
     }
-    Properties result =  PropertiesFactory.getPropertiesObject();
+    Properties result = propertiesFactory.getPropertiesInstance();
     result.putAll(m_fileProperties);
     return result;
   }
@@ -118,7 +117,7 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
     if (newProperties.equals(m_fileProperties)) {
       return;
     }
-    Properties newFileProperties =  PropertiesFactory.getPropertiesObject();
+    Properties newFileProperties = propertiesFactory.getPropertiesInstance();
     newFileProperties.putAll(newProperties);
     updateFileProperties(newFileProperties, m_upstream.getSourceType());
     this.fireRepositoryChange(namespace, newProperties);
@@ -192,8 +191,7 @@ public class LocalFileConfigRepository extends AbstractConfigRepository
 
       try {
         in = new FileInputStream(file);
-
-        properties =  PropertiesFactory.getPropertiesObject();
+        properties = propertiesFactory.getPropertiesInstance();
         properties.load(in);
         logger.debug("Loading local config file {} successfully!", file.getAbsolutePath());
       } catch (IOException ex) {
