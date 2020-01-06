@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import com.ctrip.framework.apollo.util.factory.DefaultPropertiesFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,7 +25,6 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.core.annotation.Order;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ctrip.framework.apollo.BaseIntegrationTest;
@@ -53,6 +53,7 @@ public class ConfigIntegrationTest extends BaseIntegrationTest {
   private String defaultNamespace;
   private String someOtherNamespace;
   private RemoteConfigLongPollService remoteConfigLongPollService;
+  private PropertiesFactory propertiesFactory;
 
   @Before
   public void setUp() throws Exception {
@@ -67,6 +68,9 @@ public class ConfigIntegrationTest extends BaseIntegrationTest {
     }
     configDir.mkdirs();
     remoteConfigLongPollService = ApolloInjector.getInstance(RemoteConfigLongPollService.class);
+
+    System.setProperty(PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE, "true");
+    propertiesFactory = ApolloInjector.getInstance(PropertiesFactory.class);
   }
 
   @Override
@@ -74,6 +78,7 @@ public class ConfigIntegrationTest extends BaseIntegrationTest {
   public void tearDown() throws Exception {
     ReflectionTestUtils.invokeMethod(remoteConfigLongPollService, "stopLongPollingRefresh");
     recursiveDelete(configDir);
+    System.clearProperty(PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE);
     super.tearDown();
   }
 
@@ -162,7 +167,7 @@ public class ConfigIntegrationTest extends BaseIntegrationTest {
     String someKey2="someKey2";
     String someValue2="someValue2";
 
-    Properties properties = PropertiesFactory.getPropertiesObject();
+    Properties properties = propertiesFactory.getPropertiesInstance();
     properties.put(someKey, someValue);
     properties.put(someKey1, someValue1);
     properties.put(someKey2, someValue2);
@@ -225,7 +230,7 @@ public class ConfigIntegrationTest extends BaseIntegrationTest {
     String someValue1 = "someValue1";
     String someKey2 = "someKey2";
     String someValue2 = "someValue2";
-    Properties properties = PropertiesFactory.getPropertiesObject();
+    Properties properties = propertiesFactory.getPropertiesInstance();
     properties.put(someKey1, someValue1);
     properties.put(someKey2, someValue2);
     createLocalCachePropertyFile(properties);

@@ -10,6 +10,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
+import com.ctrip.framework.apollo.util.factory.DefaultPropertiesFactory;
+import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -58,6 +60,8 @@ public class LocalFileConfigRepositoryTest {
 
     MockInjector.reset();
     MockInjector.setInstance(ConfigUtil.class, new MockConfigUtil());
+    MockInjector.setInstance(PropertiesFactory.class, new DefaultPropertiesFactory());
+
   }
 
   @After

@@ -1,6 +1,6 @@
 package com.ctrip.framework.apollo.util.yaml;
 
-import com.ctrip.framework.apollo.util.OrderedProperties;
+import com.ctrip.framework.apollo.build.ApolloInjector;
 import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.util.AbstractMap;
 import java.util.Collection;
@@ -27,12 +27,14 @@ import com.ctrip.framework.apollo.core.utils.StringUtils;
 public class YamlParser {
   private static final Logger logger = LoggerFactory.getLogger(YamlParser.class);
 
+  private PropertiesFactory propertiesFactory= ApolloInjector.getInstance(PropertiesFactory.class);
+
   /**
    * Transform yaml content to properties
    */
   public Properties yamlToProperties(String yamlContent) {
     Yaml yaml = createYaml();
-    final Properties result = PropertiesFactory.getPropertiesObject();
+    final Properties result = propertiesFactory.getPropertiesInstance();
     process(new MatchCallback() {
       @Override
       public void process(Properties properties, Map<String, Object> map) {
@@ -93,7 +95,7 @@ public class YamlParser {
   }
 
   private boolean process(Map<String, Object> map, MatchCallback callback) {
-    Properties properties = PropertiesFactory.getPropertiesObject();
+    Properties properties = propertiesFactory.getPropertiesInstance();
     properties.putAll(getFlattenedMap(map));
 
     if (logger.isDebugEnabled()) {

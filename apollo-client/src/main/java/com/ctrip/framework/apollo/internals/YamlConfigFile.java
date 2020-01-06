@@ -1,8 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.util.ExceptionUtil;
-import com.ctrip.framework.apollo.util.OrderedProperties;
-import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -63,7 +61,7 @@ public class YamlConfigFile extends PlainTextConfigFile implements PropertiesCom
 
   private Properties toProperties() {
     if (!this.hasContent()) {
-      return  PropertiesFactory.getPropertiesObject();
+      return propertiesFactory.getPropertiesInstance();
     }
 
     try {

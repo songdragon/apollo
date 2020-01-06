@@ -1,8 +1,6 @@
 package com.ctrip.framework.apollo.internals;
 
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
-import com.ctrip.framework.apollo.util.OrderedProperties;
-import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -12,7 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
@@ -136,7 +133,7 @@ public class DefaultConfig extends AbstractConfig implements RepositoryChangeLis
     }
 
     ConfigSourceType sourceType = m_configRepository.getSourceType();
-    Properties newConfigProperties =  PropertiesFactory.getPropertiesObject();
+    Properties newConfigProperties = propertiesFactory.getPropertiesInstance();
     newConfigProperties.putAll(newProperties);
 
     Map<String, ConfigChange> actualChanges = updateAndCalcConfigChanges(newConfigProperties, sourceType);
@@ -216,7 +213,7 @@ public class DefaultConfig extends AbstractConfig implements RepositoryChangeLis
     Properties properties = null;
 
     if (in != null) {
-      properties =  PropertiesFactory.getPropertiesObject();
+      properties = propertiesFactory.getPropertiesInstance();
 
       try {
         properties.load(in);
