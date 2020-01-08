@@ -30,7 +30,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  *   # enable apollo bootstrap config and inject 'application' namespace in bootstrap phase
  *   apollo.bootstrap.enabled = true
  * </pre>
- * <p>
+ *
  * or
  *
  * <pre class="code">
@@ -41,33 +41,28 @@ import org.springframework.core.env.ConfigurableEnvironment;
  *   # will inject 'application' and 'FX.apollo' namespaces in bootstrap phase
  *   apollo.bootstrap.namespaces = application,FX.apollo
  * </pre>
- * <p>
- * <p>
- * If you want to load Apollo configurations even before Logging System Initialization Phase, add
+ *
+ *
+ * If you want to load Apollo configurations even before Logging System Initialization Phase,
+ *  add
  * <pre class="code">
  *   # set apollo.bootstrap.eagerLoad.enabled
  *   apollo.bootstrap.eagerLoad.enabled = true
  * </pre>
- * <p>
- * This would be very helpful when your logging configurations is set by Apollo.
- * <p>
- * for example, you have defined logback-spring.xml in your project, and you want to inject some
- * attributes into logback-spring.xml.
+ *
+ *  This would be very helpful when your logging configurations is set by Apollo.
+ *
+ *  for example, you have defined logback-spring.xml in your project, and you want to inject some attributes into logback-spring.xml.
+ *
  */
 public class ApolloApplicationContextInitializer implements
-    ApplicationContextInitializer<ConfigurableApplicationContext>, EnvironmentPostProcessor,
-    Ordered {
-
+    ApplicationContextInitializer<ConfigurableApplicationContext> , EnvironmentPostProcessor, Ordered {
   public static final int DEFAULT_ORDER = 0;
 
-  private static final Logger logger = LoggerFactory
-      .getLogger(ApolloApplicationContextInitializer.class);
-  private static final Splitter NAMESPACE_SPLITTER = Splitter.on(",").omitEmptyStrings()
-      .trimResults();
-  private static final String[] APOLLO_SYSTEM_PROPERTIES = {"app.id",
-      ConfigConsts.APOLLO_CLUSTER_KEY,
-      "apollo.cacheDir", "apollo.accesskey.secret", ConfigConsts.APOLLO_META_KEY,
-      PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE};
+  private static final Logger logger = LoggerFactory.getLogger(ApolloApplicationContextInitializer.class);
+  private static final Splitter NAMESPACE_SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
+  private static final String[] APOLLO_SYSTEM_PROPERTIES = {"app.id", ConfigConsts.APOLLO_CLUSTER_KEY,
+      "apollo.cacheDir", "apollo.accesskey.secret", ConfigConsts.APOLLO_META_KEY, PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE};
 
   private final ConfigPropertySourceFactory configPropertySourceFactory = SpringInjector
       .getInstance(ConfigPropertySourceFactory.class);
@@ -78,10 +73,8 @@ public class ApolloApplicationContextInitializer implements
   public void initialize(ConfigurableApplicationContext context) {
     ConfigurableEnvironment environment = context.getEnvironment();
 
-    if (!environment
-        .getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED, Boolean.class, false)) {
-      logger.debug("Apollo bootstrap config is not enabled for context {}, see property: ${{}}",
-          context, PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED);
+    if (!environment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED, Boolean.class, false)) {
+      logger.debug("Apollo bootstrap config is not enabled for context {}, see property: ${{}}", context, PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED);
       return;
     }
     logger.debug("Apollo bootstrap config is enabled for context {}", context);
@@ -97,25 +90,20 @@ public class ApolloApplicationContextInitializer implements
    */
   protected void initialize(ConfigurableEnvironment environment) {
 
-    if (environment.getPropertySources()
-        .contains(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME)) {
+    if (environment.getPropertySources().contains(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME)) {
       //already initialized
       return;
     }
 
-    String namespaces = environment
-        .getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_NAMESPACES,
-            ConfigConsts.NAMESPACE_APPLICATION);
+    String namespaces = environment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_NAMESPACES, ConfigConsts.NAMESPACE_APPLICATION);
     logger.debug("Apollo bootstrap namespaces: {}", namespaces);
     List<String> namespaceList = NAMESPACE_SPLITTER.splitToList(namespaces);
 
-    CompositePropertySource composite = new CompositePropertySource(
-        PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME);
+    CompositePropertySource composite = new CompositePropertySource(PropertySourcesConstants.APOLLO_BOOTSTRAP_PROPERTY_SOURCE_NAME);
     for (String namespace : namespaceList) {
       Config config = ConfigService.getConfig(namespace);
 
-      composite.addPropertySource(
-          configPropertySourceFactory.getConfigPropertySource(namespace, config));
+      composite.addPropertySource(configPropertySourceFactory.getConfigPropertySource(namespace, config));
     }
 
     environment.getPropertySources().addFirst(composite);
@@ -130,8 +118,7 @@ public class ApolloApplicationContextInitializer implements
     }
   }
 
-  private void fillSystemPropertyFromEnvironment(ConfigurableEnvironment environment,
-      String propertyName) {
+  private void fillSystemPropertyFromEnvironment(ConfigurableEnvironment environment, String propertyName) {
     if (System.getProperty(propertyName) != null) {
       return;
     }
@@ -146,35 +133,31 @@ public class ApolloApplicationContextInitializer implements
   }
 
   /**
-   * In order to load Apollo configurations as early as even before Spring loading logging system
-   * phase, this EnvironmentPostProcessor can be called Just After ConfigFileApplicationListener has
-   * succeeded.
-   * <p>
-   * <br /> The processing sequence would be like this: <br /> Load Bootstrap properties and
-   * application properties -----> load Apollo configuration properties ----> Initialize Logging
-   * systems
+   *
+   * In order to load Apollo configurations as early as even before Spring loading logging system phase,
+   * this EnvironmentPostProcessor can be called Just After ConfigFileApplicationListener has succeeded.
+   *
+   * <br />
+   * The processing sequence would be like this: <br />
+   * Load Bootstrap properties and application properties -----> load Apollo configuration properties ----> Initialize Logging systems
    *
    * @param configurableEnvironment
    * @param springApplication
    */
   @Override
-  public void postProcessEnvironment(ConfigurableEnvironment configurableEnvironment,
-      SpringApplication springApplication) {
+  public void postProcessEnvironment(ConfigurableEnvironment configurableEnvironment, SpringApplication springApplication) {
 
     // should always initialize system properties like app.id in the first place
     initializeSystemProperty(configurableEnvironment);
 
-    Boolean eagerLoadEnabled = configurableEnvironment
-        .getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_EAGER_LOAD_ENABLED, Boolean.class,
-            false);
+    Boolean eagerLoadEnabled = configurableEnvironment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_EAGER_LOAD_ENABLED, Boolean.class, false);
 
     //EnvironmentPostProcessor should not be triggered if you don't want Apollo Loading before Logging System Initialization
     if (!eagerLoadEnabled) {
       return;
     }
 
-    Boolean bootstrapEnabled = configurableEnvironment
-        .getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED, Boolean.class, false);
+    Boolean bootstrapEnabled = configurableEnvironment.getProperty(PropertySourcesConstants.APOLLO_BOOTSTRAP_ENABLED, Boolean.class, false);
 
     if (bootstrapEnabled) {
       initialize(configurableEnvironment);
