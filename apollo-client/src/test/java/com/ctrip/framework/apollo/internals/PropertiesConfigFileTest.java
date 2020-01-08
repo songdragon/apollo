@@ -29,6 +29,7 @@ import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PropertiesConfigFileTest {
+
   private String someNamespace;
   @Mock
   private ConfigRepository configRepository;

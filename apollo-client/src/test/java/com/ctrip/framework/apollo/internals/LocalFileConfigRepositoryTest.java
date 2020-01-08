@@ -33,6 +33,7 @@ import com.google.common.io.Files;
  * Created by Jason on 4/9/16.
  */
 public class LocalFileConfigRepositoryTest {
+
   private File someBaseDir;
   private String someNamespace;
   private ConfigRepository upstreamRepo;
@@ -114,7 +115,8 @@ public class LocalFileConfigRepositoryTest {
 
     Files.write(defaultKey + "=" + someValue, file, Charsets.UTF_8);
 
-    LocalFileConfigRepository localRepo = new LocalFileConfigRepository(someNamespace, upstreamRepo);
+    LocalFileConfigRepository localRepo = new LocalFileConfigRepository(someNamespace,
+        upstreamRepo);
     localRepo.setLocalCacheDir(someBaseDir, true);
 
     Properties properties = localRepo.getConfig();
@@ -189,6 +191,7 @@ public class LocalFileConfigRepositoryTest {
   }
 
   public static class MockConfigUtil extends ConfigUtil {
+
     @Override
     public String getAppId() {
       return someAppId;

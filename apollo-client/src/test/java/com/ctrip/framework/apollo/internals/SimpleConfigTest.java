@@ -31,6 +31,7 @@ import com.google.common.util.concurrent.SettableFuture;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleConfigTest {
+
   private String someNamespace;
   @Mock
   private ConfigRepository configRepository;
@@ -41,7 +42,7 @@ public class SimpleConfigTest {
     someNamespace = "someName";
 
     System.setProperty(PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE, "true");
-    PropertiesFactory propertiesFactory=new DefaultPropertiesFactory();
+    PropertiesFactory propertiesFactory = new DefaultPropertiesFactory();
     MockInjector.setInstance(PropertiesFactory.class, propertiesFactory);
   }
 

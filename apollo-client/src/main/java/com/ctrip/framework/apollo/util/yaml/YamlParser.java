@@ -27,7 +27,7 @@ import com.ctrip.framework.apollo.core.utils.StringUtils;
 public class YamlParser {
   private static final Logger logger = LoggerFactory.getLogger(YamlParser.class);
 
-  private PropertiesFactory propertiesFactory= ApolloInjector.getInstance(PropertiesFactory.class);
+  private PropertiesFactory propertiesFactory = ApolloInjector.getInstance(PropertiesFactory.class);
 
   /**
    * Transform yaml content to properties

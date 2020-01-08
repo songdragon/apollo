@@ -8,15 +8,16 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Default PropertiesFactory implementation.
+ *
  * @author songdragon@zts.io
  */
 public class DefaultPropertiesFactory implements PropertiesFactory {
 
-  private static final Logger logger= LoggerFactory.getLogger(DefaultPropertiesFactory.class);
+  private static final Logger logger = LoggerFactory.getLogger(DefaultPropertiesFactory.class);
 
-  protected boolean isOrderEnabled=false;
+  protected boolean isOrderEnabled = false;
 
-  public DefaultPropertiesFactory(){
+  public DefaultPropertiesFactory() {
     initOrderEnabled();
   }
 
@@ -26,7 +27,8 @@ public class DefaultPropertiesFactory implements PropertiesFactory {
       try {
         isOrderEnabled = Boolean.parseBoolean(customizedOrderEnable);
       } catch (Throwable ex) {
-        logger.warn("Config for {} is invalid: {}, set default value: false", APOLLO_PROPERTY_ORDER_ENABLE,customizedOrderEnable);
+        logger.warn("Config for {} is invalid: {}, set default value: false",
+            APOLLO_PROPERTY_ORDER_ENABLE, customizedOrderEnable);
       }
     }
   }

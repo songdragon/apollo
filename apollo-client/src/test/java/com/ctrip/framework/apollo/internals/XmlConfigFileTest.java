@@ -31,6 +31,7 @@ import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class XmlConfigFileTest {
+
   private String someNamespace;
   @Mock
   private ConfigRepository configRepository;
@@ -40,7 +41,7 @@ public class XmlConfigFileTest {
     someNamespace = "someName";
 
     System.setProperty(PropertiesFactory.APOLLO_PROPERTY_ORDER_ENABLE, "true");
-    PropertiesFactory propertiesFactory=new DefaultPropertiesFactory();
+    PropertiesFactory propertiesFactory = new DefaultPropertiesFactory();
     MockInjector.setInstance(PropertiesFactory.class, propertiesFactory);
   }
 
