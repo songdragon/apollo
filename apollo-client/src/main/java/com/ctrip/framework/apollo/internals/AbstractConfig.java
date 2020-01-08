@@ -71,7 +71,7 @@ public abstract class AbstractConfig implements Config {
     m_configVersion = new AtomicLong();
     m_arrayCache = Maps.newConcurrentMap();
     allCaches = Lists.newArrayList();
-    propertiesFactory=ApolloInjector.getInstance(PropertiesFactory.class);
+    propertiesFactory = ApolloInjector.getInstance(PropertiesFactory.class);
   }
 
   @Override

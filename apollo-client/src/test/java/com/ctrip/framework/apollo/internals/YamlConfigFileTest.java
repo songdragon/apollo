@@ -7,6 +7,7 @@ import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
+import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.ctrip.framework.apollo.util.factory.DefaultPropertiesFactory;
 import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import com.ctrip.framework.apollo.util.yaml.YamlParser;
@@ -20,6 +21,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class YamlConfigFileTest {
+
   private String someNamespace;
   @Mock
   private ConfigRepository configRepository;
@@ -36,6 +38,7 @@ public class YamlConfigFileTest {
 
     MockInjector.reset();
     MockInjector.setInstance(YamlParser.class, yamlParser);
+    MockInjector.setInstance(ConfigUtil.class, new ConfigUtil());
     MockInjector.setInstance(PropertiesFactory.class, new DefaultPropertiesFactory());
   }
 
@@ -73,7 +76,7 @@ public class YamlConfigFileTest {
     someProperties.setProperty(key, someContent);
     someSourceType = ConfigSourceType.LOCAL;
 
-    Properties yamlProperties=new YamlParser().yamlToProperties(someContent);
+    Properties yamlProperties = new YamlParser().yamlToProperties(someContent);
 
     when(configRepository.getConfig()).thenReturn(someProperties);
     when(configRepository.getSourceType()).thenReturn(someSourceType);
@@ -85,8 +88,8 @@ public class YamlConfigFileTest {
     assertSame(yamlProperties, configFile.asProperties());
 
     String[] actualArrays = configFile.asProperties().keySet().toArray(new String[]{});
-    String[] expectedArrays={"someKey","someKey2"};
-    assertArrayEquals(expectedArrays,actualArrays);
+    String[] expectedArrays = {"someKey", "someKey2"};
+    assertArrayEquals(expectedArrays, actualArrays);
   }
 
   @Test
@@ -113,7 +116,8 @@ public class YamlConfigFileTest {
 
     when(configRepository.getConfig()).thenReturn(someProperties);
     when(configRepository.getSourceType()).thenReturn(someSourceType);
-    when(yamlParser.yamlToProperties(someInvalidContent)).thenThrow(new RuntimeException("some exception"));
+    when(yamlParser.yamlToProperties(someInvalidContent))
+        .thenThrow(new RuntimeException("some exception"));
 
     YamlConfigFile configFile = new YamlConfigFile(someNamespace, configRepository);
 
