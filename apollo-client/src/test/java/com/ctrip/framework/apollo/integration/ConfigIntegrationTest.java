@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import com.ctrip.framework.apollo.util.factory.DefaultPropertiesFactory;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

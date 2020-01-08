@@ -9,6 +9,9 @@ import java.util.Properties;
  */
 public interface PropertiesFactory {
 
+  /**
+   * Configuration to keep properties order as same as line order in .yml/.yaml/.properties file.
+   */
   public static final String APOLLO_PROPERTY_ORDER_ENABLE = "apollo.property.order.enable";
 
   /**

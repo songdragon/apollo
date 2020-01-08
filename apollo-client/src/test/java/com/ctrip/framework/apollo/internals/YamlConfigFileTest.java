@@ -7,6 +7,7 @@ import com.ctrip.framework.apollo.build.MockInjector;
 import com.ctrip.framework.apollo.core.ConfigConsts;
 import com.ctrip.framework.apollo.enums.ConfigSourceType;
 import com.ctrip.framework.apollo.exceptions.ApolloConfigException;
+import com.ctrip.framework.apollo.util.ConfigUtil;
 import com.ctrip.framework.apollo.util.factory.DefaultPropertiesFactory;
 import com.ctrip.framework.apollo.util.factory.PropertiesFactory;
 import com.ctrip.framework.apollo.util.yaml.YamlParser;
@@ -37,6 +38,7 @@ public class YamlConfigFileTest {
 
     MockInjector.reset();
     MockInjector.setInstance(YamlParser.class, yamlParser);
+    MockInjector.setInstance(ConfigUtil.class, new ConfigUtil());
     MockInjector.setInstance(PropertiesFactory.class, new DefaultPropertiesFactory());
   }
 

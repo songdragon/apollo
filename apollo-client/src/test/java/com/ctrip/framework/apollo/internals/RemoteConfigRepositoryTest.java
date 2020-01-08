@@ -132,9 +132,11 @@ public class RemoteConfigRepositoryTest {
     assertEquals(ConfigSourceType.REMOTE, remoteConfigRepository.getSourceType());
     remoteConfigLongPollService.stopLongPollingRefresh();
 
-    String[] actualArrays = config.keySet().toArray(new String[]{});
-    String[] expectedArrays = {"someKey", "someKey2"};
-    assertArrayEquals(expectedArrays, actualArrays);
+    if (configUtil.isPropertiesOrderEnabled()) {
+      String[] actualArrays = config.keySet().toArray(new String[]{});
+      String[] expectedArrays = {"someKey", "someKey2"};
+      assertArrayEquals(expectedArrays, actualArrays);
+    }
   }
 
   @Test
